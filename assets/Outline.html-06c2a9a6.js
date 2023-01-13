@@ -1,0 +1,1 @@
+import{ab as e,G as t,H as n,E as c}from"./framework-f86f98ae.js";const o={},s=c("p",null,"功能详情...",-1),_=[s];function l(a,r){return t(),n("div",null,_)}const u=e(o,[["render",l],["__file","Outline.html.vue"]]);export{u as default};
