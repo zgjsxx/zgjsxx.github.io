@@ -1,1 +1,0 @@
-import{ab as t,G as a,H as n,E as e,S as o}from"./framework-f86f98ae.js";const c={},r=e("h1",{id:"outline2",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#outline2","aria-hidden":"true"},"#"),o(" outline2")],-1),s=[r];function i(l,_){return a(),n("div",null,s)}const u=t(c,[["render",i],["__file","Outline2.html.vue"]]);export{u as default};
