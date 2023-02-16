@@ -1,0 +1,6 @@
+import{_ as e,V as a,W as n,a0 as s}from"./framework-c954d91f.js";const d={},i=s(`<h1 id="linux-0-11-page-s详解" tabindex="-1"><a class="header-anchor" href="#linux-0-11-page-s详解" aria-hidden="true">#</a> Linux-0.11 page.s详解</h1><h2 id="page-fault函数" tabindex="-1"><a class="header-anchor" href="#page-fault函数" aria-hidden="true">#</a> _page_fault函数</h2><p>_page_fault: 页异常中断处理程序(中断14)， 主要分为两种情况处理。 一种是由于缺页引起的页异常中断，通过调用do_no_page(error_code, address)来处理， 二是由页写保护引起的页异常， 此时用页写保护处理函数do_wp_page(error_code, address)来处理。</p><p>下面这里测试EAX寄存器的第0位是否为0，如果为0，那么说明是缺页中断， 就执行do_no_page， 如果不为0， 说明该页存在， 不是缺页中断， 那么就会进行跳转从而执行do_wp_page写保护异常处理函数。</p><p>如果对这里的汇编指令不熟悉的， 可以看一下另一篇文章<strong>Linux-0.11中的汇编</strong>进行学习。</p><div class="language-assemble line-numbers-mode" data-ext="assemble"><pre class="language-assemble"><code>testl $1,%eax
+jne 1f
+call do_no_page
+jmp 2f
+1:	call do_wp_page
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,6),r=[i];function l(t,o){return a(),n("div",null,r)}const c=e(d,[["render",l],["__file","Linux-0.11-mm-page.html.vue"]]);export{c as default};
