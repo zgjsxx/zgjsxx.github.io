@@ -1,1 +1,0 @@
-import{_ as t,V as e,W as o}from"./framework-c954d91f.js";const c={};function _(n,r){return e(),o("div")}const a=t(c,[["render",_],["__file","Linux-0.11-boot-bootsect.html.vue"]]);export{a as default};
