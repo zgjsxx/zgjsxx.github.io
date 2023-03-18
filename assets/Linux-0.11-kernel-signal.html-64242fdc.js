@@ -1,4 +1,4 @@
-import{_ as s,V as n,W as a,a0 as e}from"./framework-c954d91f.js";const p={},t=e(`<h1 id="linux-0-11-kernel目录进程管理signal-c详解" tabindex="-1"><a class="header-anchor" href="#linux-0-11-kernel目录进程管理signal-c详解" aria-hidden="true">#</a> Linux-0.11 kernel目录进程管理signal.c详解</h1><p>signal.c主要涉及的是进程的信号处理。</p><h2 id="sys-sgetmask" tabindex="-1"><a class="header-anchor" href="#sys-sgetmask" aria-hidden="true">#</a> sys_sgetmask</h2><div class="language-c line-numbers-mode" data-ext="c"><pre class="language-c"><code><span class="token keyword">int</span> <span class="token function">sys_ssetmask</span><span class="token punctuation">(</span><span class="token keyword">int</span> newmask<span class="token punctuation">)</span>
+import{_ as n,V as s,W as a,a0 as e}from"./framework-c954d91f.js";const t={},p=e(`<h1 id="linux-0-11-kernel目录进程管理signal-c详解" tabindex="-1"><a class="header-anchor" href="#linux-0-11-kernel目录进程管理signal-c详解" aria-hidden="true">#</a> Linux-0.11 kernel目录进程管理signal.c详解</h1><p>signal.c主要涉及的是进程的信号处理。该章节中最难理解的是do_singal函数。</p><h2 id="sys-sgetmask" tabindex="-1"><a class="header-anchor" href="#sys-sgetmask" aria-hidden="true">#</a> sys_sgetmask</h2><div class="language-c line-numbers-mode" data-ext="c"><pre class="language-c"><code><span class="token keyword">int</span> <span class="token function">sys_ssetmask</span><span class="token punctuation">(</span><span class="token keyword">int</span> newmask<span class="token punctuation">)</span>
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>该函数的作用是设置信号的屏蔽图，即进程对哪些信号可以不做处理。</p><h2 id="sys-ssetmask" tabindex="-1"><a class="header-anchor" href="#sys-ssetmask" aria-hidden="true">#</a> sys_ssetmask</h2><div class="language-c line-numbers-mode" data-ext="c"><pre class="language-c"><code><span class="token keyword">int</span> <span class="token function">sys_ssetmask</span><span class="token punctuation">(</span><span class="token keyword">int</span> newmask<span class="token punctuation">)</span>
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>用于设置新的信号屏蔽位图。其中SIGKILL是不可以被屏蔽的。</p><p><code> ~(1&lt;&lt;(SIGKILL-1))</code> 保证了SIGKILL的屏蔽位为0。</p><div class="language-c line-numbers-mode" data-ext="c"><pre class="language-c"><code><span class="token keyword">int</span> old<span class="token operator">=</span>current<span class="token operator">-&gt;</span>blocked<span class="token punctuation">;</span>
 
@@ -38,4 +38,23 @@ current<span class="token operator">-&gt;</span>sigaction<span class="token punc
 	<span class="token keyword">long</span> fs<span class="token punctuation">,</span> <span class="token keyword">long</span> es<span class="token punctuation">,</span> <span class="token keyword">long</span> ds<span class="token punctuation">,</span>
 	<span class="token keyword">long</span> eip<span class="token punctuation">,</span> <span class="token keyword">long</span> cs<span class="token punctuation">,</span> <span class="token keyword">long</span> eflags<span class="token punctuation">,</span>
 	<span class="token keyword">unsigned</span> <span class="token keyword">long</span> <span class="token operator">*</span> esp<span class="token punctuation">,</span> <span class="token keyword">long</span> ss<span class="token punctuation">)</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,40),o=[t];function c(l,i){return n(),a("div",null,o)}const u=s(p,[["render",c],["__file","Linux-0.11-kernel-signal.html.vue"]]);export{u as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/Linux-0.11-kernel/signal/signal_raw.png" alt="do_signal1" tabindex="0" loading="lazy"><figcaption>do_signal1</figcaption></figure><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/Linux-0.11-kernel/signal/signal_after.png" alt="do_after" tabindex="0" loading="lazy"><figcaption>do_after</figcaption></figure><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/Linux-0.11-kernel/signal/sa_restore.png" alt="sa_restore" tabindex="0" loading="lazy"><figcaption>sa_restore</figcaption></figure><div class="language-asm line-numbers-mode" data-ext="asm"><pre class="language-asm"><code>.globl __sig_restore
+.globl __masksig_restore
+# 若没有blocked，则使用这个restorer函数
+__sig_restore:
+    addl $4, %esp
+	popl %eax
+	popl %ecx
+	popl %edx
+	popf
+	ret
+__masksig_restore:
+    addl $4, %esp
+	call __ssetmask
+	addl $4, %esp
+	popl %eax
+	popl %ecx
+	popl %edx
+	popf
+	ret
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,44),o=[p];function c(i,l){return s(),a("div",null,o)}const u=n(t,[["render",c],["__file","Linux-0.11-kernel-signal.html.vue"]]);export{u as default};
