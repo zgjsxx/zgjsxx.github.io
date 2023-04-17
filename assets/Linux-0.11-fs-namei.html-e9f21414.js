@@ -577,7 +577,7 @@ mode <span class="token operator">|=</span> I_REGULAR<span class="token punctuat
 	bh<span class="token operator">-&gt;</span>b_dirt <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span><span class="token comment">//设置该目录i节点上存在脏数据</span>
 	<span class="token function">brelse</span><span class="token punctuation">(</span>bh<span class="token punctuation">)</span><span class="token punctuation">;</span>
 	<span class="token function">iput</span><span class="token punctuation">(</span>dir<span class="token punctuation">)</span><span class="token punctuation">;</span>
-	oldinode<span class="token operator">-&gt;</span>i_nlinks<span class="token operator">++</span><span class="token punctuation">;</span><span class="token comment">//将旧的i节点的硬链接数</span>
+	oldinode<span class="token operator">-&gt;</span>i_nlinks<span class="token operator">++</span><span class="token punctuation">;</span><span class="token comment">//将旧的i节点的硬链接数+1</span>
 	oldinode<span class="token operator">-&gt;</span>i_ctime <span class="token operator">=</span> CURRENT_TIME<span class="token punctuation">;</span>
 	oldinode<span class="token operator">-&gt;</span>i_dirt <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span>
 	<span class="token function">iput</span><span class="token punctuation">(</span>oldinode<span class="token punctuation">)</span><span class="token punctuation">;</span>
