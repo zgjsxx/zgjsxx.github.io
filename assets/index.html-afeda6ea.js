@@ -1,0 +1,1 @@
+import{_ as t,V as a,W as c,X as e,Y as n}from"./framework-c954d91f.js";const r={},s=e("h1",{id:"c-语言",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#c-语言","aria-hidden":"true"},"#"),n(" C++语言")],-1),o=[s];function _(d,i){return a(),c("div",null,o)}const l=t(r,[["render",_],["__file","index.html.vue"]]);export{l as default};
