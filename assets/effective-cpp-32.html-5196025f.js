@@ -1,0 +1,26 @@
+import{_ as n,V as s,W as a,a0 as e}from"./framework-9a29aaa0.js";const t={},p=e(`<h1 id="effective-c-32-确定你的public继承塑模出is-a的关系" tabindex="-1"><a class="header-anchor" href="#effective-c-32-确定你的public继承塑模出is-a的关系" aria-hidden="true">#</a> effective c++ 32 确定你的public继承塑模出is-a的关系</h1><p>本节主要分析了public继承的现实含义，public继承中，每个Derived类的对象都是Base类的对象。 Base比Derived表现出更为一般化的概念，而Derived比Base表现出更为特殊化的概念。</p><h2 id="分析" tabindex="-1"><a class="header-anchor" href="#分析" aria-hidden="true">#</a> 分析</h2><p>这里举了两个例子， 每个Student一定都是一个Person：</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token keyword">class</span> <span class="token class-name">Person</span>
+<span class="token punctuation">{</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Student</span> <span class="token operator">:</span> <span class="token base-clause"><span class="token keyword">public</span> <span class="token class-name">Person</span></span>
+<span class="token punctuation">{</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>而每个正方形一定也是一个矩形：</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token keyword">class</span> <span class="token class-name">Rectangle</span>
+<span class="token punctuation">{</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+	<span class="token keyword">virtual</span> <span class="token keyword">int</span> <span class="token function">getHeight</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> height<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+	<span class="token keyword">virtual</span> <span class="token keyword">int</span> <span class="token function">getWidth</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token keyword">const</span> <span class="token punctuation">{</span> <span class="token keyword">return</span> width<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+
+	<span class="token keyword">virtual</span> <span class="token keyword">void</span> <span class="token function">setHeight</span><span class="token punctuation">(</span><span class="token keyword">int</span> newHeight<span class="token punctuation">)</span> <span class="token punctuation">{</span> height <span class="token operator">=</span> newHeight<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+	<span class="token keyword">virtual</span> <span class="token keyword">void</span> <span class="token function">setWidth</span><span class="token punctuation">(</span><span class="token keyword">int</span> newWidth<span class="token punctuation">)</span> <span class="token punctuation">{</span> width <span class="token operator">=</span> newWidth<span class="token punctuation">;</span> <span class="token punctuation">}</span>
+
+<span class="token keyword">private</span><span class="token operator">:</span>
+	<span class="token keyword">int</span> height<span class="token punctuation">;</span>
+	<span class="token keyword">int</span> width<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+
+<span class="token keyword">class</span> <span class="token class-name">Square</span> <span class="token operator">:</span> <span class="token base-clause"><span class="token keyword">public</span> <span class="token class-name">Rectangle</span></span>
+<span class="token punctuation">{</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="总结" tabindex="-1"><a class="header-anchor" href="#总结" aria-hidden="true">#</a> 总结</h2><ul><li>public继承意味着is-a,适用于base class身上的每一件事情一定也使用于derived classes身上，因为每一个derived class对象也都是一个basic class对象。</li></ul>`,9),c=[p];function i(l,o){return s(),a("div",null,c)}const d=n(t,[["render",i],["__file","effective-cpp-32.html.vue"]]);export{d as default};
