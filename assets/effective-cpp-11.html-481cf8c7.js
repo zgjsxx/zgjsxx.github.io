@@ -1,0 +1,15 @@
+import{_ as n,V as s,W as a,a0 as e}from"./framework-9a29aaa0.js";const t={},p=e(`<h1 id="effective-c-11-operator-处理自我赋值" tabindex="-1"><a class="header-anchor" href="#effective-c-11-operator-处理自我赋值" aria-hidden="true">#</a> effective c++ 11 operator= 处理自我赋值</h1><p>我们知道复制构造函数和赋值运算符的区别是赋值构造函数用于创建一个新的对象，而赋值运算符用于给一个已经存在的对象重新赋值。</p><p>因此赋值运算符就可能存在把自己赋值给自己的情况，本节就是专门讨论这个场景的。</p><h2 id="分析" tabindex="-1"><a class="header-anchor" href="#分析" aria-hidden="true">#</a> 分析</h2><p>本文介绍了三种办法来处理这个问题，其实作者后续不仅仅讨论了自我赋值的问题，还讨论了赋值运算符的异常安全问题。</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code>Widget<span class="token operator">&amp;</span> Widget<span class="token double-colon punctuation">::</span><span class="token keyword">operator</span><span class="token operator">=</span><span class="token punctuation">(</span><span class="token keyword">const</span> Widget<span class="token operator">&amp;</span> rhs<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+
+	<span class="token comment">// Identity test.</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">&amp;</span>rhs <span class="token operator">==</span> <span class="token keyword">this</span><span class="token punctuation">)</span>
+	<span class="token punctuation">{</span>
+		<span class="token keyword">return</span> <span class="token operator">*</span><span class="token keyword">this</span><span class="token punctuation">;</span>
+	<span class="token punctuation">}</span>
+
+	<span class="token keyword">delete</span> pb<span class="token punctuation">;</span>
+	pb <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token function">Bitmap</span><span class="token punctuation">(</span><span class="token operator">*</span>rhs<span class="token punctuation">.</span>pb<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+	<span class="token keyword">return</span> <span class="token operator">*</span><span class="token keyword">this</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="总结" tabindex="-1"><a class="header-anchor" href="#总结" aria-hidden="true">#</a> 总结</h2><ul><li>确保当对象自我赋值时operator=有良好行为。其中技术包括比较&quot;来源对象&quot;和&quot;目标对象&quot;的地址、精心周到的语句顺序，以及copy-and-swap。</li><li>确定任何函数做过操作一个以上的对象，而其中多个对象是同一个对象时，其行为仍然正确。</li></ul>`,8),o=[p];function c(i,l){return s(),a("div",null,o)}const d=n(t,[["render",c],["__file","effective-cpp-11.html.vue"]]);export{d as default};
