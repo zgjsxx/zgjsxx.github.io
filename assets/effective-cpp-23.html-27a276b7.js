@@ -1,0 +1,27 @@
+import{_ as n,V as s,W as a,a0 as e}from"./framework-9a29aaa0.js";const p={},t=e(`<h1 id="effective-c-23-宁以non-member、non-friend替换member函数" tabindex="-1"><a class="header-anchor" href="#effective-c-23-宁以non-member、non-friend替换member函数" aria-hidden="true">#</a> effective c++ 23 宁以non-member、non-friend替换member函数</h1><p>本章节所讲解的内容并不复杂，但是在实战中去运用才是关键。下面就通过例子来看看作者想要表达的观点。</p><h2 id="分析" tabindex="-1"><a class="header-anchor" href="#分析" aria-hidden="true">#</a> 分析</h2><p>我们现在有一个WebBrowser的类，目前其提供了clearCache，clearHistory， removeCookies三个函数，分别用于清除缓存，清除历史记录和清除cookie。 那么我们如果需要提供一个clear所有内容的函数clearBrowser，我们是该提供一个成员函数还是提供一个全局的函数呢？</p><p><strong>提供一个成员函数</strong>：</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token keyword">namespace</span> WebBrowserStuff
+<span class="token punctuation">{</span>
+<span class="token keyword">class</span> <span class="token class-name">WebBrowser</span>
+<span class="token punctuation">{</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+    <span class="token keyword">void</span> <span class="token function">clearCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">void</span> <span class="token function">clearHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token keyword">void</span> <span class="token function">removeCookies</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token keyword">public</span><span class="token operator">:</span>
+    <span class="token keyword">void</span> <span class="token function">clearBrowser</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">{</span>
+        <span class="token function">clearCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">clearHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">removeCookies</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><strong>提供一个全局的函数</strong>：</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token keyword">namespace</span> WebBrowserStuff
+<span class="token punctuation">{</span>
+<span class="token keyword">void</span> <span class="token function">clearBrowser</span><span class="token punctuation">(</span>WebBrowser<span class="token operator">&amp;</span> wb<span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    wb<span class="token punctuation">.</span><span class="token function">clearCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    wb<span class="token punctuation">.</span><span class="token function">clearHistory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    wb<span class="token punctuation">.</span><span class="token function">removeCookies</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>作者的建议是提供一个非成员，非友元的函数去处理。增加一个成员函数或者友元函数，就增加了一个可以访问private成员的机会。 而目前的场景没有访问私有成员的必要，因此提供一个全局的函数更有利于类的封装性。</p><h2 id="总结" tabindex="-1"><a class="header-anchor" href="#总结" aria-hidden="true">#</a> 总结</h2><ul><li>宁可拿non-member non-friend函数替换member函数。这样做可以增加封装性，包裹弹性和机能扩充性。</li></ul>`,11),c=[t];function o(i,l){return s(),a("div",null,c)}const r=n(p,[["render",o],["__file","effective-cpp-23.html.vue"]]);export{r as default};
