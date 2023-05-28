@@ -58,4 +58,16 @@ sys_setreuid<span class="token punctuation">,</span>sys_setregid<span class="tok
 	pop %es
 	pop %ds
 	iret
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,37),l=[i];function c(p,u){return n(),a("div",null,l)}const d=s(t,[["render",c],["__file","Linux-0.11-kernel-system_call.html.vue"]]);export{d as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="sys-fork" tabindex="-1"><a class="header-anchor" href="#sys-fork" aria-hidden="true">#</a> sys_fork</h3><p>在sys_fork中将调用copy_process完成最后的进程fork的过程，下面是sys_fork的编码，其是一段汇编代码，这是少数用汇编写的sys_开头的函数，大多数sys_开头的内核方法都是c语言编写的。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>sys_fork:
+	call find_empty_process
+	testl %eax,%eax
+	js 1f
+	push %gs
+	pushl %esi
+	pushl %edi
+	pushl %ebp
+	pushl %eax
+	call copy_process
+	addl $20,%esp
+1:	ret
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>sys_fork首先调用find_empty_process去进程task_struct数组中寻找一个空位，如果寻找不到就直接返回。如果寻找到了，就将一些寄存器压栈，进而调用copy_process方法。在调用sys_fork方法时，内核栈的状态如下所示：</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-kernel/fork/system_call_stack.png" alt="内核栈的状态" tabindex="0" loading="lazy"><figcaption>内核栈的状态</figcaption></figure>`,42),l=[i];function c(p,u){return n(),a("div",null,l)}const o=s(t,[["render",c],["__file","Linux-0.11-kernel-system_call.html.vue"]]);export{o as default};
