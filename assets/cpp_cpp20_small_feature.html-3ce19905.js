@@ -1,1 +1,0 @@
-import{_ as c,V as a,W as t,X as e,Y as _}from"./framework-9a29aaa0.js";const r={},s=e("h1",{id:"c-20的新增的小的特性",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#c-20的新增的小的特性","aria-hidden":"true"},"#"),_(" c++20的新增的小的特性")],-1),o=[s];function n(l,d){return a(),t("div",null,o)}const i=c(r,[["render",n],["__file","cpp_cpp20_small_feature.html.vue"]]);export{i as default};
