@@ -306,7 +306,7 @@ finish</span>
 <span class="token number">19</span>      <span class="token punctuation">}</span>
 <span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> next
 0x00007ffff783feb0 <span class="token keyword">in</span> __libc_start_call_main <span class="token punctuation">(</span><span class="token punctuation">)</span> from /lib64/libc.so.6
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="call" tabindex="-1"><a class="header-anchor" href="#call" aria-hidden="true">#</a> call</h2><p>call命令可以使得我们在程序运行时去调用某一个方法。</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;iostream&gt;</span></span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="call" tabindex="-1"><a class="header-anchor" href="#call" aria-hidden="true">#</a> call</h3><p>call命令可以使得我们在程序运行时去调用某一个方法。</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;iostream&gt;</span></span>
 
 <span class="token keyword">int</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">int</span> a<span class="token punctuation">,</span> <span class="token keyword">int</span> b<span class="token punctuation">)</span>
 <span class="token punctuation">{</span>
@@ -333,4 +333,90 @@ Breakpoint <span class="token number">1</span>, main <span class="token punctuat
 <span class="token number">11</span>          int b <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">;</span>
 <span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> call add<span class="token punctuation">(</span><span class="token number">1,2</span><span class="token punctuation">)</span>
 <span class="token variable">$1</span> <span class="token operator">=</span> <span class="token number">3</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>参考文献</p>`,55),d={href:"https://github.com/hellogcc/100-gdb-tips/blob/master/src/index.md",target:"_blank",rel:"noopener noreferrer"};function r(k,b){const s=l("ExternalLinkIcon");return t(),e("div",null,[u,n("p",null,[n("a",d,[p("https://github.com/hellogcc/100-gdb-tips/blob/master/src/index.md"),o(s)])])])}const m=a(c,[["render",r],["__file","gdb_cmd.html.vue"]]);export{m as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="break" tabindex="-1"><a class="header-anchor" href="#break" aria-hidden="true">#</a> break</h3><p>break用于设置一个断点</p><p>普通断点的设置在上面已经提到过，这里看看其他的用法</p><ul><li>条件断点</li></ul><p>条件断点在条件成立的时候才会触发</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;iostream&gt;</span></span>
+
+<span class="token keyword">void</span> <span class="token function">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">int</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">&quot;i = &quot;</span> <span class="token operator">&lt;&lt;</span> i <span class="token operator">&lt;&lt;</span> std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+        sum <span class="token operator">+=</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> sum <span class="token operator">&lt;&lt;</span> std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token function">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">&quot;finish&quot;</span> <span class="token operator">&lt;&lt;</span> std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>在下面的调试过程中，在循环体内设置了条件断点，只有当i=5的时候，断点才会生效。</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token punctuation">[</span>root@localhost test1<span class="token punctuation">]</span><span class="token comment"># gdb a.out -q</span>
+Reading symbols from a.out<span class="token punctuation">..</span>.
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> b main.cpp:7 <span class="token keyword">if</span> i <span class="token operator">=</span> <span class="token number">5</span>
+Breakpoint <span class="token number">1</span> at 0x40119e: <span class="token function">file</span> main.cpp, line <span class="token number">7</span>.
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> info b
+Num     Type           Disp Enb Address            What
+<span class="token number">1</span>       breakpoint     keep y   0x000000000040119e <span class="token keyword">in</span> func<span class="token punctuation">(</span><span class="token punctuation">)</span> at main.cpp:7
+        stop only <span class="token keyword">if</span> i <span class="token operator">=</span> <span class="token number">5</span>
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> r
+Starting program: /home/work/cpp_proj/test1/a.out
+<span class="token punctuation">[</span>Thread debugging using libthread_db enabled<span class="token punctuation">]</span>
+Using <span class="token function">host</span> libthread_db library <span class="token string">&quot;/lib64/libthread_db.so.1&quot;</span><span class="token builtin class-name">.</span>
+
+Breakpoint <span class="token number">1</span>, func <span class="token punctuation">(</span><span class="token punctuation">)</span> at main.cpp:7
+<span class="token number">7</span>               std::cout <span class="token operator">&lt;&lt;</span> <span class="token string">&quot;i = &quot;</span> <span class="token operator">&lt;&lt;</span> i <span class="token operator">&lt;&lt;</span> std::endl<span class="token punctuation">;</span>
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> p i
+<span class="token variable">$1</span> <span class="token operator">=</span> <span class="token number">5</span>
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><ul><li>临时断点</li></ul><p>在使用gdb时，如果想让断点只生效一次，可以使用tbreak命令(缩写为tb)。</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span> <span class="token string">&lt;iostream&gt;</span></span>
+
+<span class="token keyword">void</span> <span class="token function">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token keyword">int</span> sum <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token keyword">int</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> <span class="token operator">++</span>i<span class="token punctuation">)</span><span class="token punctuation">{</span>
+        std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">&quot;i = &quot;</span> <span class="token operator">&lt;&lt;</span> i <span class="token operator">&lt;&lt;</span> std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+        sum <span class="token operator">+=</span> i<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+
+    std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> sum <span class="token operator">&lt;&lt;</span> std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+
+<span class="token punctuation">}</span>
+
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">{</span>
+    <span class="token function">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    std<span class="token double-colon punctuation">::</span>cout <span class="token operator">&lt;&lt;</span> <span class="token string">&quot;finish&quot;</span> <span class="token operator">&lt;&lt;</span> std<span class="token double-colon punctuation">::</span>endl<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>在下面的调试中，在循环的内部使用tb创建了一个断点，当使用continue命令时，不再会停止在该断点处。</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token punctuation">[</span>root@localhost test1<span class="token punctuation">]</span><span class="token comment"># gdb a.out -q</span>
+Reading symbols from a.out<span class="token punctuation">..</span>.
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> tb main.cpp:7
+Temporary breakpoint <span class="token number">1</span> at 0x40119e: <span class="token function">file</span> main.cpp, line <span class="token number">7</span>.
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> info <span class="token builtin class-name">break</span>
+Num     Type           Disp Enb Address            What
+<span class="token number">1</span>       breakpoint     del  y   0x000000000040119e <span class="token keyword">in</span> func<span class="token punctuation">(</span><span class="token punctuation">)</span> at main.cpp:7
+<span class="token punctuation">(</span>gdb<span class="token punctuation">)</span> r
+Starting program: /home/work/cpp_proj/test1/a.out
+<span class="token punctuation">[</span>Thread debugging using libthread_db enabled<span class="token punctuation">]</span>
+Using <span class="token function">host</span> libthread_db library <span class="token string">&quot;/lib64/libthread_db.so.1&quot;</span><span class="token builtin class-name">.</span>
+
+Temporary breakpoint <span class="token number">1</span>, func <span class="token punctuation">(</span><span class="token punctuation">)</span> at main.cpp:7
+<span class="token number">7</span>               std::cout <span class="token operator">&lt;&lt;</span> <span class="token string">&quot;i = &quot;</span> <span class="token operator">&lt;&lt;</span> <span class="token string">i<span class="token bash punctuation"> <span class="token operator">&lt;&lt;</span> std::endl<span class="token punctuation">;</span></span>
+Missing separate debuginfos, use: dnf debuginfo-install glibc-2.34-60.el9.x86_64 libgcc-11.3.1-4.3.el9.x86_64 libstdc++-11.3.1-4.3.el9.x86_64
+(gdb) c
+Continuing.
+i</span> <span class="token operator">=</span> <span class="token number">0</span>
+i <span class="token operator">=</span> <span class="token number">1</span>
+i <span class="token operator">=</span> <span class="token number">2</span>
+i <span class="token operator">=</span> <span class="token number">3</span>
+i <span class="token operator">=</span> <span class="token number">4</span>
+i <span class="token operator">=</span> <span class="token number">5</span>
+i <span class="token operator">=</span> <span class="token number">6</span>
+i <span class="token operator">=</span> <span class="token number">7</span>
+i <span class="token operator">=</span> <span class="token number">8</span>
+i <span class="token operator">=</span> <span class="token number">9</span>
+<span class="token number">45</span>
+finish
+<span class="token punctuation">[</span>Inferior <span class="token number">1</span> <span class="token punctuation">(</span>process <span class="token number">81491</span><span class="token punctuation">)</span> exited normally<span class="token punctuation">]</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>参考文献</p>`,68),d={href:"https://github.com/hellogcc/100-gdb-tips/blob/master/src/index.md",target:"_blank",rel:"noopener noreferrer"};function r(k,b){const s=l("ExternalLinkIcon");return t(),e("div",null,[u,n("p",null,[n("a",d,[p("https://github.com/hellogcc/100-gdb-tips/blob/master/src/index.md"),o(s)])])])}const m=a(c,[["render",r],["__file","gdb_cmd.html.vue"]]);export{m as default};
