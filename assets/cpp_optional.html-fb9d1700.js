@@ -1,9 +1,0 @@
-import{_ as n,V as s,W as a,a0 as e}from"./framework-9a29aaa0.js";const t={},o=e(`<h1 id="std-optional的实现原理" tabindex="-1"><a class="header-anchor" href="#std-optional的实现原理" aria-hidden="true">#</a> std::optional的实现原理</h1><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token keyword">template</span> <span class="token operator">&lt;</span><span class="token keyword">typename</span> <span class="token class-name">T</span><span class="token operator">&gt;</span>
-<span class="token keyword">class</span> <span class="token class-name">optional</span>
-<span class="token punctuation">{</span>
-	<span class="token keyword">bool</span> _initialized<span class="token punctuation">;</span>
-	std<span class="token double-colon punctuation">::</span>aligned_storage_t<span class="token operator">&lt;</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span>T<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token keyword">alignof</span><span class="token punctuation">(</span>T<span class="token punctuation">)</span><span class="token operator">&gt;</span> _storage<span class="token punctuation">;</span>
-<span class="token keyword">public</span><span class="token operator">:</span> 
-<span class="token comment">// operations </span>
-<span class="token punctuation">}</span><span class="token punctuation">;</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,2),p=[o];function c(l,i){return s(),a("div",null,p)}const r=n(t,[["render",c],["__file","cpp_optional.html.vue"]]);export{r as default};
