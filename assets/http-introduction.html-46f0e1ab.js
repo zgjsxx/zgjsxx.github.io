@@ -1,1 +1,0 @@
-import{_ as e,V as o,W as a,X as t,Y as c}from"./framework-9a29aaa0.js";const n={},r=t("h1",{id:"http-协议",tabindex:"-1"},[t("a",{class:"header-anchor",href:"#http-协议","aria-hidden":"true"},"#"),c(" http 协议")],-1),s=[r];function _(d,h){return o(),a("div",null,s)}const l=e(n,[["render",_],["__file","http-introduction.html.vue"]]);export{l as default};
