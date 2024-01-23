@@ -1,0 +1,25 @@
+import{_ as s,V as e,W as n,a0 as a}from"./framework-9a29aaa0.js";const i={},t=a(`<p>设置https 代理</p><p>Git代理有两种设置方式，分别是全局代理和只对Github代理，建议只对github 代理。 代理协议也有两种，分别是使用http代理和使用socks5代理，建议使用socks5代理。 注意下面代码的端口号需要根据你自己的代理端口设定，比如我的代理socks端口是51837。</p><p>全局设置（不推荐）</p><p>使用http代理</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token function">git</span> config <span class="token parameter variable">--global</span> http.proxy http://127.0.0.1:58591
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> https.proxy https://127.0.0.1:58591
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p>使用socks5代理</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token function">git</span> config <span class="token parameter variable">--global</span> http.proxy socks5://127.0.0.1:51837
+<span class="token function">git</span> config <span class="token parameter variable">--global</span> https.proxy socks5://127.0.0.1:51837
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p>只对Github代理（推荐）</p><p>使用socks5代理（推荐）</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token function">git</span> config <span class="token parameter variable">--global</span> http.https://github.com.proxy socks5://127.0.0.1:51837
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>使用http代理（不推荐）</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token function">git</span> config <span class="token parameter variable">--global</span> http.https://github.com.proxy http://127.0.0.1:58591
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>取消代理 当你不需要使用代理时，可以取消之前设置的代理。</p><div class="language-bash line-numbers-mode" data-ext="sh"><pre class="language-bash"><code><span class="token function">git</span> config <span class="token parameter variable">--global</span> <span class="token parameter variable">--unset</span> http.proxy <span class="token function">git</span> config <span class="token parameter variable">--global</span> <span class="token parameter variable">--unset</span> https.proxy
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>设置ssh代理（终极解决方案）</p><p>https代理存在一个局限，那就是没有办法做身份验证，每次拉取私库或者推送代码时，都需要输入github的账号和密码，非常痛苦。 设置ssh代理前，请确保你已经设置ssh key。可以参考在 github 上添加 SSH key 完成设置 更进一步是设置ssh代理。只需要配置一个config就可以了。</p><h1 id="linux、macos" tabindex="-1"><a class="header-anchor" href="#linux、macos" aria-hidden="true">#</a> Linux、MacOS</h1><p>vi ~/.ssh/config</p><h1 id="windows" tabindex="-1"><a class="header-anchor" href="#windows" aria-hidden="true">#</a> Windows</h1><p>到C:\\Users\\your_user_name.ssh目录下，新建一个config文件（无后缀名）</p><p>将下面内容加到config文件中即可</p><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>Host github.com
+  User git
+  Port 22
+  Hostname github.com
+  # 注意修改路径为你的路径
+  IdentityFile &quot;C:\\Users\\&lt;User Name&gt;\\.ssh\\id_rsa&quot;
+  TCPKeepAlive yes
+  ProxyCommand &quot;C:\\Users\\&lt;User Name&gt;\\E\\Git\\mingw64\\bin\\connect&quot; -S 127.0.0.1:1080 -a none %h %p
+
+Host ssh.github.com
+  User git
+  Port 443
+  Hostname ssh.github.com
+  # 注意修改路径为你的路径
+  IdentityFile &quot;C:\\Users\\&lt;User Name&gt;\\.ssh\\id_rsa&quot;
+  TCPKeepAlive yes
+  ProxyCommand &quot;C:\\Users\\&lt;User Name&gt;\\E\\Git\\mingw64\\bin\\connect&quot; -S 127.0.0.1:1080 -a none %h %p
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>对于windows用户，代理会用到connect.exe，你如果安装了Git都会自带connect.exe，如我的路径为C:\\APP\\Git\\mingw64\\bin\\connect</p><p>如果不知道自己的机器上是否有connect.exe， 可以使用everything去进行检索。</p><p>#Windows用户，注意替换你的端口号和connect.exe的路径 ProxyCommand &quot;C:\\APP\\Git\\mingw64\\bin\\connect&quot; -S 127.0.0.1:51837 -a none %h %p</p><p>#MacOS用户用下方这条命令，注意替换你的端口号 #ProxyCommand nc -v -x 127.0.0.1:51837 %h %p</p><h1 id="测试是否设置成功" tabindex="-1"><a class="header-anchor" href="#测试是否设置成功" aria-hidden="true">#</a> 测试是否设置成功</h1><p>ssh -T <a href="mailto:git@github.com">git@github.com</a></p>`,28),l=[t];function o(c,r){return e(),n("div",null,l)}const p=s(i,[["render",o],["__file","git-proxy.html.vue"]]);export{p as default};
