@@ -1,0 +1,1 @@
+import{_ as e,V as c,W as t}from"./framework-9a29aaa0.js";const n={};function r(o,_){return c(),t("div")}const s=e(n,[["render",r],["__file","Lecture6-calling-c-functions.html.vue"]]);export{s as default};
