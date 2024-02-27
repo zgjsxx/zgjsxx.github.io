@@ -1,0 +1,1 @@
+import{_ as t,V as c,W as a,X as e,Y as n}from"./framework-9a29aaa0.js";const r={},s=e("h2",{id:"函数调用规约",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#函数调用规约","aria-hidden":"true"},"#"),n(" 函数调用规约")],-1),o=[s];function _(i,l){return c(),a("div",null,o)}const h=t(r,[["render",_],["__file","Lecture6-calling-c-functions.html.vue"]]);export{h as default};
