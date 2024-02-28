@@ -1,0 +1,12 @@
+import{_ as o,V as n,W as a,X as e,Y as d,$ as r,a0 as c,F as s}from"./framework-9a29aaa0.js";const i={},l=c(`<h1 id="小组作业" tabindex="-1"><a class="header-anchor" href="#小组作业" aria-hidden="true">#</a> 小组作业</h1><h2 id="小组作业-1" tabindex="-1"><a class="header-anchor" href="#小组作业-1" aria-hidden="true">#</a> 小组作业#1</h2><p>为了让你可以更加熟悉汇编语言， 这里是我们的小组作业：</p><blockquote><p>编写一个汇编程序，提示用户输入姓名，打印 What is your name?然后接受最多255个字符的输入，然后打印出Hello，name，nice to meet you！随后是换行符。</p></blockquote><p>您必须同时使用 <code>SYS_WRITE</code> (= 1) 和 <code>SYS_READ</code> (= 0) 系统调用。使用以下 <code>.data</code> 部分：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>section .data
+
+prompt:       db      &quot;What is your name?&quot;
+prompt_len:   equ     $-prompt
+
+buffer:       times 255 db &#39;!&#39;
+
+resp1:        db      &quot;Hello, &quot;
+resp1_len:    equ     $-resp1
+resp2:        db      &quot;, nice to meet you!&quot;, 10
+resp2_len:    equ     $-resp2
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>buffer</code>是传递给<code>SYS_READ</code>调用的输入缓冲区。它由 255 个组成<code>！</code>组成。请注意，<code>SYS_READ</code> 将返回在 <code>rax</code> 中读取的实际字节数，然后在打印缓冲区内容时必须使用该字节数。（如果输入的长度错误，您会看到用户名被截断，或者在其末尾添加!!!!。）</p><p><code>SYS_READ</code> 和 <code>SYS_WRITE</code> 的fd参数是一个文件描述符，一个标识文件或流的数字。始终可用的标准文件描述符是：</p><table><thead><tr><th>文件描述符</th><th>含义</th></tr></thead><tbody><tr><td>0</td><td>标准输入</td></tr><tr><td>1</td><td>标准输出</td></tr><tr><td>2</td><td>标准错误</td></tr></tbody></table><p>因此，您将从 <code>FD #0</code> 进行 <code>SYS_READ</code>，然后从 <code>FD #1</code> 进行 <code>SYS_WRITE</code>（就像我们之前所做的那样）。</p><p>不要忘记使用 <code>SYS_EXIT (= 60)</code> 系统调用来结束您的程序，以优雅地结束您的程序！</p><h2 id="附录" tabindex="-1"><a class="header-anchor" href="#附录" aria-hidden="true">#</a> 附录</h2>`,12),u={href:"https://staffwww.fullcoll.edu/aclifton/cs241/group_proj1.html",target:"_blank",rel:"noopener noreferrer"};function p(h,m){const t=s("ExternalLinkIcon");return n(),a("div",null,[l,e("p",null,[d("原文链接："),e("a",u,[d("https://staffwww.fullcoll.edu/aclifton/cs241/group_proj1.html"),r(t)])])])}const b=o(i,[["render",p],["__file","Group-Assignment1-greet-the-user.html.vue"]]);export{b as default};
