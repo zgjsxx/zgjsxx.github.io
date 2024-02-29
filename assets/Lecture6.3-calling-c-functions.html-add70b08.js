@@ -7,4 +7,4 @@ import{_ as e,V as n,W as s,a0 as a}from"./framework-9a29aaa0.js";const i={},r=a
     ...
     pop r12         ; Restore them before return
     ret
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,6),d=[r];function l(c,t){return n(),s("div",null,d)}const v=e(i,[["render",l],["__file","Lecture6-calling-c-functions.html.vue"]]);export{v as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div>`,6),d=[r];function l(c,t){return n(),s("div",null,d)}const v=e(i,[["render",l],["__file","Lecture6.3-calling-c-functions.html.vue"]]);export{v as default};
