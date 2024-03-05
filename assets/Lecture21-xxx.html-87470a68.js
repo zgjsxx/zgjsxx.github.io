@@ -1,1 +1,0 @@
-import{_ as t,V as a,W as c,X as e,Y as r}from"./framework-9a29aaa0.js";const s={},o=e("h1",{id:"第二十一讲-宏定义3",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#第二十一讲-宏定义3","aria-hidden":"true"},"#"),r(" 第二十一讲： 宏定义3")],-1),n=[o];function _(d,i){return a(),c("div",null,n)}const l=t(s,[["render",_],["__file","Lecture21-xxx.html.vue"]]);export{l as default};

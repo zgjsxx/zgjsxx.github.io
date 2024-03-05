@@ -1,1 +1,0 @@
-import{_ as c,V as t,W as a,X as e,Y as n}from"./framework-9a29aaa0.js";const r={},o=e("h1",{id:"调用c程序-浮点数的指令",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#调用c程序-浮点数的指令","aria-hidden":"true"},"#"),n(" 调用c程序 浮点数的指令")],-1),s=[o];function _(i,l){return t(),a("div",null,s)}const h=c(r,[["render",_],["__file","Lecture9-calling-c-function.html.vue"]]);export{h as default};
