@@ -113,4 +113,43 @@ _start:
 
 .done
     ret
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="附录" tabindex="-1"><a class="header-anchor" href="#附录" aria-hidden="true">#</a> 附录</h2><h3 id="课程资源" tabindex="-1"><a class="header-anchor" href="#课程资源" aria-hidden="true">#</a> 课程资源</h3>`,45),p={href:"https://staffwww.fullcoll.edu/aclifton/cs241/lecture-stack-c-functions.html",target:"_blank",rel:"noopener noreferrer"};function u(v,m){const e=c("ExternalLinkIcon");return i(),d("div",null,[o,n("p",null,[s("原文链接："),n("a",p,[s("https://staffwww.fullcoll.edu/aclifton/cs241/lecture-stack-c-functions.html"),l(e)])])])}const k=a(t,[["render",u],["__file","Lecture8-calling-c-functions.html.vue"]]);export{k as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="c-兼容函数" tabindex="-1"><a class="header-anchor" href="#c-兼容函数" aria-hidden="true">#</a> C 兼容函数</h2><h2 id="函数模板" tabindex="-1"><a class="header-anchor" href="#函数模板" aria-hidden="true">#</a> 函数模板</h2><p>以下是一个函数模板，该函数保留被调用者保存的寄存器并使用 rbp 指向其堆栈帧的开头：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>;; func_name(arguments...)
+;; What the function does
+;; 
+;; Arguments:
+;;   arg1 -- rdi
+;;   arg2 -- si
+;;   ... etc
+;;   arg7 -- qword, stack [rbp + 16]
+;; 
+;; Return value: eax
+;;
+global func_name
+func_name:
+
+    ;; Preamble
+    push rbp     ; Save calling function&#39;s rbp
+    mov rbp, rsp ; rbp points to our stack frame
+
+    push r12     ; Push any callee-saved registers you use
+
+    ; If you need space for stack-based local variables, you can reserve it with
+    ;   sub rsp, amount
+
+    ; Realign rsp to 16*rsp + 8
+
+    ;; Function body
+    ...          
+
+    ;; Epilogue
+
+    ; Remove any alignment added
+
+    ; If you reserved any space for stack-based local variables, you should 
+    ; restore it with
+    ;   add rsp, amount    
+
+    pop r12      ; Restore callee-saved registers
+    pop rbp      ; Restore caller&#39;s rbp
+    ret
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="附录" tabindex="-1"><a class="header-anchor" href="#附录" aria-hidden="true">#</a> 附录</h2><h3 id="课程资源" tabindex="-1"><a class="header-anchor" href="#课程资源" aria-hidden="true">#</a> 课程资源</h3>`,49),p={href:"https://staffwww.fullcoll.edu/aclifton/cs241/lecture-stack-c-functions.html",target:"_blank",rel:"noopener noreferrer"};function u(v,m){const e=c("ExternalLinkIcon");return i(),d("div",null,[o,n("p",null,[s("原文链接："),n("a",p,[s("https://staffwww.fullcoll.edu/aclifton/cs241/lecture-stack-c-functions.html"),l(e)])])])}const k=a(t,[["render",u],["__file","Lecture8-calling-c-functions.html.vue"]]);export{k as default};
