@@ -1,4 +1,4 @@
-import{_ as c,V as i,W as o,X as e,Y as n,$ as d,a0 as s,F as l}from"./framework-9a29aaa0.js";const t={},r=s(`<ul><li><a href="#%E7%AC%AC%E4%BA%94%E8%AE%B2-%E8%B7%B3%E8%BD%AC%E6%AF%94%E8%BE%83%E6%9D%A1%E4%BB%B6%E8%B7%B3%E8%BD%AC">第五讲 跳转、比较、条件跳转</a><ul><li><a href="#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BB%93%E6%9E%84">汇编语言程序的结构</a></li><li><a href="#%E8%B7%B3%E8%BD%AC">跳转</a></li><li><a href="#%E6%AF%94%E8%BE%83">比较</a><ul><li><a href="#cmp%E6%8C%87%E4%BB%A4"><code>cmp</code>指令</a></li><li><a href="#cmps%E6%8C%87%E4%BB%A4%E5%86%85%E5%AD%98%E4%B8%8E%E5%86%85%E5%AD%98%E7%9A%84%E6%AF%94%E8%BE%83"><code>cmps*</code>指令(内存与内存的比较)</a></li><li><a href="#test%E6%8C%87%E4%BB%A4"><code>test</code>指令</a></li><li><a href="#%E5%85%B6%E4%BB%96%E6%8C%87%E4%BB%A4">其他指令</a></li></ul></li><li><a href="#%E6%9D%A1%E4%BB%B6%E8%B7%B3%E8%BD%AC%E7%9A%84%E6%8C%87%E4%BB%A4">条件跳转的指令</a><ul><li><a href="#%E8%B7%B3%E8%BD%AC%E7%9B%AE%E6%A0%87">跳转目标</a></li><li><a href="#%E8%B7%B3%E8%BD%AC%E4%BC%98%E5%8C%96">跳转优化</a></li></ul></li><li><a href="#%E8%BD%AC%E6%8D%A2-cc-%E7%BB%93%E6%9E%84">转换 C/C++ 结构</a><ul><li><a href="#if-else-%E9%93%BE">if-else 链</a></li><li><a href="#%E5%B5%8C%E5%A5%97%E7%9A%84-if-else">嵌套的 <code>if-else</code></a></li><li><a href="#do-while%E5%BE%AA%E7%8E%AF"><code>do-while</code>循环</a></li><li><a href="#while-%E5%BE%AA%E7%8E%AF"><code>while</code> 循环</a></li><li><a href="#break%E5%92%8Ccontinue"><code>break</code>和<code>continue</code></a></li></ul></li><li><a href="#%E9%99%84%E5%BD%95">附录</a><ul><li><a href="#%E8%AF%BE%E7%A8%8B%E8%B5%84%E6%BA%90">课程资源</a></li></ul></li></ul></li></ul><h1 id="第五讲-跳转、比较、条件跳转" tabindex="-1"><a class="header-anchor" href="#第五讲-跳转、比较、条件跳转" aria-hidden="true">#</a> 第五讲 跳转、比较、条件跳转</h1><p>汇编语言没有专用的循环结构（如 <code>for</code>、<code>do</code>、<code>while</code> 等）。它只有下面这些特性：</p><ul><li>分支(跳转)： 跳转到程序中的新位置。</li><li>比较： 比较两个操作数，然后适当地设置标志寄存器。只有一条比较指令，它执行所有可能的比较（等于、小于、等于零等）</li><li>条件跳转：根据标记的状态决定是否进行跳转。</li><li>条件移动：根据标记的状态决定是否执行<code>mov</code>。</li></ul><p>后面会学习到<strong>函数调用</strong>和<strong>函数返回</strong>，它只是上述几种类型的特殊形式。</p><h2 id="汇编语言程序的结构" tabindex="-1"><a class="header-anchor" href="#汇编语言程序的结构" aria-hidden="true">#</a> 汇编语言程序的结构</h2><p>我们说过，汇编语言与 C/C++ 等语言的区别在于，汇编语言中的每一条语句（指令）都对应于一个 CPU 操作。相比之下，在C/C++中，单个语句在编译期间可能会生成许多操作。这意味着汇编不能像 C/C++ 那样有&quot;条件语句&quot;或&quot;循环语句&quot;；在 C/C++ 中，这些是复合语句，即其中包含其他语句的语句。这必然意味着 <code>if-else</code> 或 <code>while</code> 循环会生成多个 CPU 操作。因此，在汇编语言中，循环和条件的工作方式非常不同。</p><p>归根结底，汇编语言程序只是一系列指令。不同函数之间，或者循环或 if-else 的&quot;主体&quot;与编写它的函数的其余部分之间没有真正的划分。程序只是一大堆指令的集合，我们需要使用最基础的指令去构建出函数、循环等语义。</p><p>汇编语言程序中的每条指令都有一个地址，即程序最终运行时它在内存中的位置。添加标签告诉汇编器这个地址（标签后面的指令的地址）很重要，重要到需要保存并命名。因此，当我们写:</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>_start:
+import{_ as i,V as c,W as l,X as e,Y as n,$ as s,a0 as d,F as o}from"./framework-9a29aaa0.js";const t={},r=d(`<ul><li><a href="#%E7%AC%AC%E4%BA%94%E8%AE%B2-%E8%B7%B3%E8%BD%AC%E6%AF%94%E8%BE%83%E6%9D%A1%E4%BB%B6%E8%B7%B3%E8%BD%AC">第五讲 跳转、比较、条件跳转</a><ul><li><a href="#%E6%B1%87%E7%BC%96%E8%AF%AD%E8%A8%80%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BB%93%E6%9E%84">汇编语言程序的结构</a></li><li><a href="#%E8%B7%B3%E8%BD%AC">跳转</a></li><li><a href="#%E6%AF%94%E8%BE%83">比较</a><ul><li><a href="#cmp%E6%8C%87%E4%BB%A4"><code>cmp</code>指令</a></li><li><a href="#cmps%E6%8C%87%E4%BB%A4%E5%86%85%E5%AD%98%E4%B8%8E%E5%86%85%E5%AD%98%E7%9A%84%E6%AF%94%E8%BE%83"><code>cmps*</code>指令(内存与内存的比较)</a></li><li><a href="#test%E6%8C%87%E4%BB%A4"><code>test</code>指令</a></li><li><a href="#%E5%85%B6%E4%BB%96%E6%8C%87%E4%BB%A4">其他指令</a></li></ul></li><li><a href="#%E6%9D%A1%E4%BB%B6%E8%B7%B3%E8%BD%AC%E7%9A%84%E6%8C%87%E4%BB%A4">条件跳转的指令</a><ul><li><a href="#%E8%B7%B3%E8%BD%AC%E7%9B%AE%E6%A0%87">跳转目标</a></li><li><a href="#%E8%B7%B3%E8%BD%AC%E4%BC%98%E5%8C%96">跳转优化</a></li></ul></li><li><a href="#%E8%BD%AC%E6%8D%A2-cc-%E7%BB%93%E6%9E%84">转换 C/C++ 结构</a><ul><li><a href="#if-else-%E9%93%BE">if-else 链</a></li><li><a href="#%E5%B5%8C%E5%A5%97%E7%9A%84-if-else">嵌套的 <code>if-else</code></a></li><li><a href="#do-while%E5%BE%AA%E7%8E%AF"><code>do-while</code>循环</a></li><li><a href="#while-%E5%BE%AA%E7%8E%AF"><code>while</code> 循环</a></li><li><a href="#break%E5%92%8Ccontinue"><code>break</code>和<code>continue</code></a></li><li><a href="#switch-case%E8%AF%AD%E5%8F%A5"><code>switch-case</code>语句</a></li><li><a href="#%E5%B0%8F%E5%86%99%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%A4%A7%E5%86%99%E7%9A%84%E5%87%BD%E6%95%B0">小写转换为大写的函数</a></li></ul></li><li><a href="#%E9%99%84%E5%BD%95">附录</a><ul><li><a href="#%E8%AF%BE%E7%A8%8B%E8%B5%84%E6%BA%90">课程资源</a></li></ul></li></ul></li></ul><h1 id="第五讲-跳转、比较、条件跳转" tabindex="-1"><a class="header-anchor" href="#第五讲-跳转、比较、条件跳转" aria-hidden="true">#</a> 第五讲 跳转、比较、条件跳转</h1><p>汇编语言没有专用的循环结构（如 <code>for</code>、<code>do</code>、<code>while</code> 等）。它只有下面这些特性：</p><ul><li>分支(跳转)： 跳转到程序中的新位置。</li><li>比较： 比较两个操作数，然后适当地设置标志寄存器。只有一条比较指令，它执行所有可能的比较（等于、小于、等于零等）</li><li>条件跳转：根据标记的状态决定是否进行跳转。</li><li>条件移动：根据标记的状态决定是否执行<code>mov</code>。</li></ul><p>后面会学习到<strong>函数调用</strong>和<strong>函数返回</strong>，它只是上述几种类型的特殊形式。</p><h2 id="汇编语言程序的结构" tabindex="-1"><a class="header-anchor" href="#汇编语言程序的结构" aria-hidden="true">#</a> 汇编语言程序的结构</h2><p>我们说过，汇编语言与 C/C++ 等语言的区别在于，汇编语言中的每一条语句（指令）都对应于一个 CPU 操作。相比之下，在C/C++中，单个语句在编译期间可能会生成许多操作。这意味着汇编不能像 C/C++ 那样有&quot;条件语句&quot;或&quot;循环语句&quot;；在 C/C++ 中，这些是复合语句，即其中包含其他语句的语句。这必然意味着 <code>if-else</code> 或 <code>while</code> 循环会生成多个 CPU 操作。因此，在汇编语言中，循环和条件的工作方式非常不同。</p><p>归根结底，汇编语言程序只是一系列指令。不同函数之间，或者循环或 if-else 的&quot;主体&quot;与编写它的函数的其余部分之间没有真正的划分。程序只是一大堆指令的集合，我们需要使用最基础的指令去构建出函数、循环等语义。</p><p>汇编语言程序中的每条指令都有一个地址，即程序最终运行时它在内存中的位置。添加标签告诉汇编器这个地址（标签后面的指令的地址）很重要，重要到需要保存并命名。因此，当我们写:</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>_start:
   ...
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div></div></div><p><code>_start</code> 的值是紧随其后的第一条指令的地址。对于本地标签（名称以 . 开头的标签）也是如此。</p><p>汇编语言程序中的正常控制流程很简单：每条指令都按从第一个到最后一个的顺序执行。 CPU 始终知道程序中“下一条”指令：它是紧接在该指令之后的指令。</p><p>汇编语言支持的唯一一种其他控制流是跳转到某个地址（由 CPU 通过更改指令指针寄存器 rip 的值来实现），而不是按照从头到尾的顺序运行指令。我们所有现有的流程控制结构（if-else、switch-case、while、do-while）都必须转换为这种原始概念，即在程序中向前跳过某些指令，或在程序中向后跳过，以便程序中的某些地址多次送入 CPU 执行指令。</p><h2 id="跳转" tabindex="-1"><a class="header-anchor" href="#跳转" aria-hidden="true">#</a> 跳转</h2><p>跳转通常是指<code>jmp</code>指令，它可以使程序跳转到新位置来工作。<code>jmp</code>指令会通过修改<code>rip</code>从而加载指定位置的代码进行执行。我们只需要提供要跳转的目标就可以实现跳转：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>jmp target
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p><strong>跳转标签</strong></p><p>跳转的目标必须是一个标签。标签由标识符后跟冒号组成：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>Target:
@@ -49,7 +49,7 @@ computed_jump:  jcc rax                           ; Jump
 target2:
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>mov</code> 当然是条件结构的一部分，它要么：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>mov rax, computed_jump - target1
 </code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>或者</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>mov rax, computed_jump - target2
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>取决于某些条件。我们还可以存储一个compated_jump - target1、compated_jump - target2等偏移量的数组，然后对其进行索引.</p>`,98),p={href:"https://www.intel.cn/content/www/cn/zh/content-details/782158/intel-64-and-ia-32-architectures-software-developer-s-manual-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html",target:"_blank",rel:"noopener noreferrer"},u=s(`<p><strong>复合条件</strong></p><p>我们如何检查复合条件，例如 <code>rbx &gt;= 10 和 rbx &lt; 100</code>，并在复合条件为真时执行跳转？</p><ul><li>一种方法是执行多步跳转<div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>cmp rbx, 10
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>取决于某些条件。我们还可以存储一个compated_jump - target1、compated_jump - target2等偏移量的数组，然后对其进行索引.</p>`,98),p={href:"https://www.intel.cn/content/www/cn/zh/content-details/782158/intel-64-and-ia-32-architectures-software-developer-s-manual-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html",target:"_blank",rel:"noopener noreferrer"},u=d(`<p><strong>复合条件</strong></p><p>我们如何检查复合条件，例如 <code>rbx &gt;= 10 和 rbx &lt; 100</code>，并在复合条件为真时执行跳转？</p><ul><li>一种方法是执行多步跳转<div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>cmp rbx, 10
 jge .step1
 jmp .else
 
@@ -178,4 +178,78 @@ jge .end
     jmp .end_loop_ ; break
     jmp .loop_     ; continue
 .end_loop_:
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="附录" tabindex="-1"><a class="header-anchor" href="#附录" aria-hidden="true">#</a> 附录</h2><h3 id="课程资源" tabindex="-1"><a class="header-anchor" href="#课程资源" aria-hidden="true">#</a> 课程资源</h3>`,59),v={href:"https://staffwww.fullcoll.edu/aclifton/cs241/lecture-branching-comparisons.html",target:"_blank",rel:"noopener noreferrer"},m={href:"http://ics.p.lodz.pl/~dpuchala/LowLevelProgr/",target:"_blank",rel:"noopener noreferrer"},b={href:"https://www.felixcloutier.com/x86/",target:"_blank",rel:"noopener noreferrer"},g={href:"https://www.felixcloutier.com/x86/jcc",target:"_blank",rel:"noopener noreferrer"},h={href:"https://www.felixcloutier.com/x86/jmp",target:"_blank",rel:"noopener noreferrer"};function x(k,f){const a=l("ExternalLinkIcon");return i(),o("div",null,[r,e("p",null,[n("查询了"),e("a",p,[n("intel指令集"),d(a)]),n(" volume 2中关于jcc的部分，jcc后面不可以带register，因此课程中这里讲解的似乎不太正确。")]),u,e("p",null,[n("原文链接："),e("a",v,[n("https://staffwww.fullcoll.edu/aclifton/cs241/lecture-branching-comparisons.html"),d(a)])]),e("p",null,[e("a",m,[n("http://ics.p.lodz.pl/~dpuchala/LowLevelProgr/"),d(a)])]),e("p",null,[e("a",b,[n("https://www.felixcloutier.com/x86/"),d(a)])]),e("p",null,[e("a",g,[n("https://www.felixcloutier.com/x86/jcc"),d(a)])]),e("p",null,[e("a",h,[n("https://www.felixcloutier.com/x86/jmp"),d(a)])])])}const j=c(t,[["render",x],["__file","Lecture5-branch.html.vue"]]);export{j as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="switch-case语句" tabindex="-1"><a class="header-anchor" href="#switch-case语句" aria-hidden="true">#</a> <code>switch-case</code>语句</h3><p>与 <code>if-else</code> 不同，<code>switch-case</code> 没有对汇编的单一转换。根据 case 标签的数量及其值，编译器可能会将 <code>switch-case</code> 转换为如上所述的 if-else 链，或转换为基于表的跳转， 甚至是类似哈希表的结构。我们将研究第二种选择，构建一个跳转目标表，然后使用它来实现 <code>switch-case</code>：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>;;;; 
+;;;; switch_case.s
+;;;; Implementing a switch-case statement as a jump table.
+;;;;
+
+section .data
+
+jump_table: dq  _start.case0, _start.case1, _start.case2, _start.case3
+
+section .text
+
+global _start
+_start:
+
+  ; Switch on rcx = 0, 1, 2, 3, default
+  mov rbx, qword [jump_table + 8*rcx]
+  cmp rcx, 4
+  jae .default
+  jmp rbx
+
+.case0:
+
+  ...
+  jmp .end_switch
+
+.case1:
+
+  ...
+  jmp .end_switch 
+
+.case2:
+
+  ...
+  jmp .end_switch
+
+.case3:
+
+  ...
+  jmp .end_switch
+
+.default:
+  ...
+
+.end_switch
+  ...
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>注意：</p><ul><li>在跳转表的定义中，我们必须使用.case标签的全名。如果我们只写.case0，它将引用（不存在的）标签jump_table.case0。</li><li>每个case都必须以跳转到switch末尾来结束。这就是为什么每一个案件都必须以break结束！ （如果省略跳跃，会发生什么？）</li><li>内存操作数 qword [jump_table + 8*rcx] 使用内存查找的扩展形式，我们稍后会介绍它：可以说内存操作数比 [addr] 更通用。在这种情况下，我们使用jump_table作为查找的位移，然后将rcx乘以8，因为每个表条目都是64位（8字节）。</li></ul><p>case 标签表的索引始终为 0, 1, 2, 3, ... 如果实际的 case 标签值与此不对应，那么我们必须以某种方式对其进行转换（编译器通常会这样做以供使用）。例如，如果我们的标签是 10、11、12、13，我们可以简单地减去 10 并将其用作我们的索引。如果标签是 10、20、30、40，我们可以除以 10 并减 1。如果标签是 3、1、2、0，我们可以对案例重新编号。</p><p>如果案例标签不适合任何模式，我们可能必须简单地循环遍历值数组才能找到正确的标签，甚至可能进行二分搜索（如果标签值集足够大）。在本例中，我们有两个数组，一个是标签值，另一个是标签目标。</p><h3 id="小写转换为大写的函数" tabindex="-1"><a class="header-anchor" href="#小写转换为大写的函数" aria-hidden="true">#</a> 小写转换为大写的函数</h3><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>;;; uppercase
+;;; Converts byte [rdi] from uppercase to lowercase.
+;;;
+uppercase:
+  ; rdi = addr. of byte to convert
+
+  cmp byte [rdi], &#39;a&#39;
+  jb .done
+  cmp byte [rdi], &#39;z&#39;
+  ja .done
+
+  sub byte [rdi], 32 
+
+  .done
+  ret
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>这相当于:</p><div class="language-cpp line-numbers-mode" data-ext="cpp"><pre class="language-cpp"><code><span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">*</span>rdi <span class="token operator">&gt;=</span> a<span class="token punctuation">)</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">*</span>rdi <span class="token operator">&lt;=</span> z<span class="token punctuation">)</span>
+      <span class="token operator">*</span>rdi <span class="token operator">-=</span> <span class="token number">32</span><span class="token punctuation">;</span>
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>这也可以通过使用基于减法的范围测试技巧来完成，前提是我们首先将值移入寄存器</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>uppercase:
+
+  mov al, byte [rdi]
+  sub al, &#39;a&#39;         ; Values below &#39;a&#39; will overflow
+  cmp al, &#39;z&#39; - &#39;a&#39;
+  ja .done
+
+  sub byte [rdi], 32
+
+  .done:
+  ret
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="附录" tabindex="-1"><a class="header-anchor" href="#附录" aria-hidden="true">#</a> 附录</h2><h3 id="课程资源" tabindex="-1"><a class="header-anchor" href="#课程资源" aria-hidden="true">#</a> 课程资源</h3><p>原文链接：</p>`,73),v={href:"https://staffwww.fullcoll.edu/aclifton/cs241/lecture-branching-comparisons.html",target:"_blank",rel:"noopener noreferrer"},m={href:"https://staffwww.fullcoll.edu/aclifton/cs241/branching-conditions-applications.html",target:"_blank",rel:"noopener noreferrer"},b={href:"http://ics.p.lodz.pl/~dpuchala/LowLevelProgr/",target:"_blank",rel:"noopener noreferrer"},h={href:"https://www.felixcloutier.com/x86/",target:"_blank",rel:"noopener noreferrer"},g={href:"https://www.felixcloutier.com/x86/jcc",target:"_blank",rel:"noopener noreferrer"},x={href:"https://www.felixcloutier.com/x86/jmp",target:"_blank",rel:"noopener noreferrer"};function k(f,w){const a=o("ExternalLinkIcon");return c(),l("div",null,[r,e("p",null,[n("查询了"),e("a",p,[n("intel指令集"),s(a)]),n(" volume 2中关于jcc的部分，jcc后面不可以带register，因此课程中这里讲解的似乎不太正确。")]),u,e("p",null,[n("第五讲： "),e("a",v,[n("https://staffwww.fullcoll.edu/aclifton/cs241/lecture-branching-comparisons.html"),s(a)])]),e("p",null,[n("第六讲： "),e("a",m,[n("https://staffwww.fullcoll.edu/aclifton/cs241/branching-conditions-applications.html"),s(a)])]),e("p",null,[e("a",b,[n("http://ics.p.lodz.pl/~dpuchala/LowLevelProgr/"),s(a)])]),e("p",null,[e("a",h,[n("https://www.felixcloutier.com/x86/"),s(a)])]),e("p",null,[e("a",g,[n("https://www.felixcloutier.com/x86/jcc"),s(a)])]),e("p",null,[e("a",x,[n("https://www.felixcloutier.com/x86/jmp"),s(a)])])])}const E=i(t,[["render",k],["__file","Lecture5-branch.html.vue"]]);export{E as default};
