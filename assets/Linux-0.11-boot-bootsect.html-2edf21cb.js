@@ -1,19 +1,70 @@
-import{_ as e,V as a,W as i,X as s,Y as t,$ as d,a0 as l,F as r}from"./framework-9a29aaa0.js";const c={},o=l(`<h1 id="linux-0-11-boot目录bootsect-s详解" tabindex="-1"><a class="header-anchor" href="#linux-0-11-boot目录bootsect-s详解" aria-hidden="true">#</a> Linux-0.11 boot目录bootsect.s详解</h1><h2 id="模块简介" tabindex="-1"><a class="header-anchor" href="#模块简介" aria-hidden="true">#</a> 模块简介</h2><p>bootsect.s是磁盘启动的引导程序，其概括起来就是代码的搬运工，将代码搬到合适的位置。下图是对搬运过程的概括，可以有个印象，后面将详细讲解。</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-boot/bootsect_boot.png" alt="启动中内存分布变化" tabindex="0" loading="lazy"><figcaption>启动中内存分布变化</figcaption></figure><p>bootsect.s主要做了如下的三件事:</p><ul><li>搬运bootsect.s代码到0x9000:0x0000处</li><li>加载setup.s代码到0x9000:0x200处</li><li>加载system模块到0x1000:0x0000处</li></ul><h2 id="过程详解" tabindex="-1"><a class="header-anchor" href="#过程详解" aria-hidden="true">#</a> 过程详解</h2><h3 id="搬运bootsect-s代码到0x9000-0x0000处" tabindex="-1"><a class="header-anchor" href="#搬运bootsect-s代码到0x9000-0x0000处" aria-hidden="true">#</a> 搬运bootsect.s代码到0x9000:0x0000处</h3><p>将ax寄存器设置为0x07c0， 接着ax寄存器的值拷贝给ds，即ds目前也为0x07c0。</p><p>将ax寄存器设置为0x9000， 接着ax寄存器的值拷贝给es，即es目前也为0x9000。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>mov	$BOOTSEG, %ax	#将ds段寄存器设置为0x07c0
-mov	%ax, %ds
-mov	$INITSEG, %ax	#将es段寄存器设置为0x9000
-mov	%ax, %es
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>接下来将ecx的值设置为256。接下来通过sub将si和di寄存器设置为0。</p><p>接下来使用rep和movsw从ds:si拷贝256个字(512字节)到es:si处。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>mov	$256, %cx		#设置移动计数值256字
-sub	%si, %si		#源地址	ds:si = 0x07C0:0x0000
-sub	%di, %di		#目标地址 es:si = 0x9000:0x0000
-rep					#重复执行并递减cx的值
-movsw				#从内存[si]处移动cx个字到[di]处
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>接下来使用ljmp跳转到0x9000 偏移量为go处的代码执行。</p><div class="language-c line-numbers-mode" data-ext="c"><pre class="language-c"><code>ljmp	$INITSEG<span class="token punctuation">,</span> $go
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p>cs寄存器的值为0x9000。接下来的操作就是将ds，es，ss都赋值为0x9000。同时将sp设置为0xFF00。</p><div class="language-c line-numbers-mode" data-ext="c"><pre class="language-c"><code>go<span class="token operator">:</span>	mov	<span class="token operator">%</span>cs<span class="token punctuation">,</span> <span class="token operator">%</span>ax		#将ds，es，ss都设置成移动后代码所在的段处<span class="token punctuation">(</span><span class="token number">0x9000</span><span class="token punctuation">)</span>
-	mov	<span class="token operator">%</span>ax<span class="token punctuation">,</span> <span class="token operator">%</span>ds
-	mov	<span class="token operator">%</span>ax<span class="token punctuation">,</span> <span class="token operator">%</span>es
-	mov	<span class="token operator">%</span>ax<span class="token punctuation">,</span> <span class="token operator">%</span>ss
-	mov	$<span class="token number">0xFF00</span><span class="token punctuation">,</span> <span class="token operator">%</span>sp		# arbitrary value <span class="token operator">&gt;&gt;</span><span class="token number">512</span>
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h3 id="加载setup-s代码到0x9000-0x200处" tabindex="-1"><a class="header-anchor" href="#加载setup-s代码到0x9000-0x200处" aria-hidden="true">#</a> 加载setup.s代码到0x9000:0x200处</h3><p>接下来这一部分用于加载setup.s的代码到0x9000:0200处。</p><p>这里利用了BIOS的0x13号中断。</p><p>下面是关于BIOS INT 0x13在使用时的说明:</p><p>ah = 0x02 读磁盘到内存 al = 4 读4个扇区 ch: 柱面号的低8位， cl: 0-5位代表开始扇区， 6-7位 代表磁道号的高2位代表柱面的高2位。 dh 磁头号 dl 驱动器号。</p><p>如果读取成功则执行ok_load_setup。 如果不成功，则对驱动器进行复位，再次读取。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>load_setup:
+import{_ as n,V as i,W as a,X as e,Y as d,$ as t,a0 as l,F as c}from"./framework-9a29aaa0.js";const r={},o=l(`<h1 id="linux-0-11-boot目录bootsect-s详解" tabindex="-1"><a class="header-anchor" href="#linux-0-11-boot目录bootsect-s详解" aria-hidden="true">#</a> Linux-0.11 boot目录bootsect.s详解</h1><h2 id="模块简介" tabindex="-1"><a class="header-anchor" href="#模块简介" aria-hidden="true">#</a> 模块简介</h2><p>bootsect.s是磁盘启动的引导程序，其概括起来就是代码的搬运工，将代码搬到合适的位置。下图是对搬运过程的概括，可以有个印象，后面将详细讲解。</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-boot/bootsect_boot.png" alt="启动中内存分布变化" tabindex="0" loading="lazy"><figcaption>启动中内存分布变化</figcaption></figure><p>bootsect.s主要做了如下的三件事:</p><ul><li>搬运bootsect.s代码到0x9000:0x0000处</li><li>加载setup.s代码到0x9000:0x200处</li><li>加载system模块到0x1000:0x0000处</li></ul><h2 id="过程详解" tabindex="-1"><a class="header-anchor" href="#过程详解" aria-hidden="true">#</a> 过程详解</h2><h3 id="搬运bootsect-s代码到0x9000-0x0000处" tabindex="-1"><a class="header-anchor" href="#搬运bootsect-s代码到0x9000-0x0000处" aria-hidden="true">#</a> 搬运bootsect.s代码到0x9000:0x0000处</h3><p>下面是bootsect.s中开头1-50行。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>!
+! SYS_SIZE is the number of clicks (16 bytes) to be loaded.
+! 0x3000 is 0x30000 bytes = 196kB, more than enough for current
+! versions of linux
+!
+SYSSIZE = 0x3000
+!
+!	bootsect.s		(C) 1991 Linus Torvalds
+!
+! bootsect.s is loaded at 0x7c00 by the bios-startup routines, and moves
+! iself out of the way to address 0x90000, and jumps there.
+!
+! It then loads &#39;setup&#39; directly after itself (0x90200), and the system
+! at 0x10000, using BIOS interrupts. 
+!
+! NOTE! currently system is at most 8*65536 bytes long. This should be no
+! problem, even in the future. I want to keep it simple. This 512 kB
+! kernel size should be enough, especially as this doesn&#39;t contain the
+! buffer cache as in minix
+!
+! The loader has been made as simple as possible, and continuos
+! read errors will result in a unbreakable loop. Reboot by hand. It
+! loads pretty fast by getting whole sectors at a time whenever possible.
+
+.globl begtext, begdata, begbss, endtext, enddata, endbss
+.text
+begtext:
+.data
+begdata:
+.bss
+begbss:
+.text
+
+SETUPLEN = 4				! nr of setup-sectors
+BOOTSEG  = 0x07c0			! original address of boot-sector
+INITSEG  = 0x9000			! we move boot here - out of the way
+SETUPSEG = 0x9020			! setup starts here
+SYSSEG   = 0x1000			! system loaded at 0x10000 (65536).
+ENDSEG   = SYSSEG + SYSSIZE		! where to stop loading
+
+! ROOT_DEV:	0x000 - same type of floppy as boot.
+!		0x301 - first partition on first drive etc
+ROOT_DEV = 0x306
+
+entry _start
+_start:
+	mov	ax,#BOOTSEG
+	mov	ds,ax
+	mov	ax,#INITSEG
+	mov	es,ax
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>其中最关键的是下面这几行：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	mov	ax,#BOOTSEG 
+	mov	ds,ax
+	mov	ax,#INITSEG
+	mov	es,ax
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>这里首先将<code>ax</code>寄存器设置为<code>0x07c0</code>， 接着将<code>ax</code>寄存器的值拷贝给<code>ds</code>，即<code>ds</code>目前为<code>0x07c0</code>。</p><p>接下来将<code>ax</code>寄存器设置为<code>0x9000</code>， 接着将<code>ax</code>寄存器的值拷贝给<code>es</code>，即<code>es</code>目前为<code>0x9000</code>。</p><p>下面是bootsect.s中的51-55行：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>
+	mov	cx,#256 #设置移动计数值256字
+	sub	si,si   #源地址	ds:si = 0x07C0:0x0000
+	sub	di,di   #目标地址 es:di = 0x9000:0x0000
+	rep         #重复执行并递减cx的值
+	movw        #从内存[si]处移动cx个字到[di]处			
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>这里首先将<code>cx</code>的值设置为<code>256</code>。</p><p>接下来<code>sub</code>指令后跟了两个相同的<code>si</code>寄存器，这其实会将寄存器<code>si</code>设置为0。<code>sub di,di</code>同理将<code>di</code>设置为0。</p><p>接下来使用<code>rep</code>前缀和<code>movsw</code>指令。</p><p>根据Intel手册，<code>movsw</code>的作用是从<code>DS:(E)SI</code>拷贝一个字到<code>ES:（E)DI</code>。<code>movsw</code>操作之后会对<code>si</code>和<code>si</code>进行递增或者递减，递增还是递减由<code>EFLAGS</code>寄存器中的方向位(DF: direction flag)来决定， DF=0，则进行递增， DF=1，则进行递减。</p><p>因此<code>rep movsw</code>的实际作用是从<code>ds:si</code>拷贝256个字(512字节)到<code>es:si</code>处。</p><p>接下来是bootsect.s的第56行，使用<code>jmpi</code>指令进行跳转。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	jmpi	go,INITSEG
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p><code>jmpi</code>是段间跳转指令，<code>jmpi</code>的格式是<code>jmpi 段内偏移， 段选择子</code>。</p><p>跳转到<code>0x9000</code> 偏移量为<code>go</code>处的代码执行。</p><p>下面是bootsect.s的第57-62行。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>go:	mov	ax,cs  #将ds，es，ss都设置成移动后代码所在的段处(0x9000)
+	mov	ds,ax
+	mov	es,ax
+	mov	ss,ax
+	mov	sp,#0xFF00
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>cs</code>寄存器的值为<code>0x9000</code>。接下来的操作就是将<code>ds</code>，<code>es</code>，<code>ss</code>都赋值为<code>0x9000</code>。同时将<code>sp</code>设置为<code>0xFF00</code>。</p><h3 id="加载setup-s代码到0x9000-0x200处" tabindex="-1"><a class="header-anchor" href="#加载setup-s代码到0x9000-0x200处" aria-hidden="true">#</a> 加载setup.s代码到0x9000:0x200处</h3><p>接下来这一部分用于加载setup.s的代码到0x9000:0200处。</p><p>这里利用了BIOS的0x13号中断。</p><p>下面是关于BIOS INT 0x13在使用时的说明:</p><p>ah = 0x02 读磁盘到内存 al = 4 读4个扇区 ch: 柱面号的低8位， cl: 0-5位代表开始扇区， 6-7位 代表磁道号的高2位代表柱面的高2位。 dh 磁头号 dl 驱动器号。</p><p>如果读取成功则执行ok_load_setup。 如果不成功，则对驱动器进行复位，再次读取。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>load_setup:
 	mov	$0x0000, %dx		# drive 0, head 0
 	mov	$0x0002, %cx		# sector 2, track 0
 	mov	$0x0200, %bx		# address = 512, in INITSEG
@@ -139,4 +190,4 @@ root_defined:
 	mov	%ax, %cs:root_dev+0
 
 	ljmp	$SETUPSEG, $0   !跳转到SETUPSEG模块进行执行
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="q-a" tabindex="-1"><a class="header-anchor" href="#q-a" aria-hidden="true">#</a> Q &amp; A</h2>`,61),v={href:"https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md",target:"_blank",rel:"noopener noreferrer"},u=s("hr",null,null,-1),m=s("p",null,"文中如有表达不正确之处，欢迎大家与我交流，微信号codebuilding。",-1),p=s("figure",null,[s("img",{src:"https://github.com/zgjsxx/static-img-repo/raw/main/blog/personal/wechat.jpg",alt:"",tabindex:"0",loading:"lazy"}),s("figcaption")],-1);function x(b,h){const n=r("ExternalLinkIcon");return a(),i("div",null,[o,s("p",null,[s("a",v,[t("https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md"),d(n)])]),u,m,p])}const k=e(c,[["render",x],["__file","Linux-0.11-boot-bootsect.html.vue"]]);export{k as default};
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="q-a" tabindex="-1"><a class="header-anchor" href="#q-a" aria-hidden="true">#</a> Q &amp; A</h2>`,71),v={href:"https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md",target:"_blank",rel:"noopener noreferrer"},m=e("hr",null,null,-1),u=e("p",null,"文中如有表达不正确之处，欢迎大家与我交流，微信号codebuilding。",-1),b=e("figure",null,[e("img",{src:"https://github.com/zgjsxx/static-img-repo/raw/main/blog/personal/wechat.jpg",alt:"",tabindex:"0",loading:"lazy"}),e("figcaption")],-1);function x(p,h){const s=c("ExternalLinkIcon");return i(),a("div",null,[o,e("p",null,[e("a",v,[d("https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md"),t(s)])]),m,u,b])}const k=n(r,[["render",x],["__file","Linux-0.11-boot-bootsect.html.vue"]]);export{k as default};
