@@ -1,4 +1,4 @@
-import{_ as a,V as l,W as t,X as e,Y as i,$ as s,a0 as n,F as c}from"./framework-9a29aaa0.js";const o={},r=n(`<h1 id="linux-0-11-boot目录bootsect-s详解" tabindex="-1"><a class="header-anchor" href="#linux-0-11-boot目录bootsect-s详解" aria-hidden="true">#</a> Linux-0.11 boot目录bootsect.s详解</h1><h2 id="模块简介" tabindex="-1"><a class="header-anchor" href="#模块简介" aria-hidden="true">#</a> 模块简介</h2><p>bootsect.s是磁盘启动的引导程序，其概括起来就是代码的搬运工，将代码搬到合适的位置。下图是对搬运过程的概括，可以有个印象，后面将详细讲解。</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-boot/bootsect_boot.png" alt="启动中内存分布变化" tabindex="0" loading="lazy"><figcaption>启动中内存分布变化</figcaption></figure><p>bootsect.s主要做了如下的三件事:</p><ul><li>搬运bootsect.s代码到0x9000:0x0000处</li><li>加载setup.s代码到0x9000:0x200处</li><li>加载system模块到0x1000:0x0000处</li></ul><h2 id="过程详解" tabindex="-1"><a class="header-anchor" href="#过程详解" aria-hidden="true">#</a> 过程详解</h2><h3 id="step1-搬运bootsect-s代码到0x9000-0x0000处" tabindex="-1"><a class="header-anchor" href="#step1-搬运bootsect-s代码到0x9000-0x0000处" aria-hidden="true">#</a> step1：搬运bootsect.s代码到0x9000:0x0000处</h3><p>下面是bootsect.s中开头1-50行。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>!
+import{_ as a,V as l,W as c,X as e,Y as d,$ as s,a0 as n,F as t}from"./framework-9a29aaa0.js";const o={},r=n(`<h1 id="linux-0-11-boot目录bootsect-s详解" tabindex="-1"><a class="header-anchor" href="#linux-0-11-boot目录bootsect-s详解" aria-hidden="true">#</a> Linux-0.11 boot目录bootsect.s详解</h1><h2 id="模块简介" tabindex="-1"><a class="header-anchor" href="#模块简介" aria-hidden="true">#</a> 模块简介</h2><p>bootsect.s是磁盘启动的引导程序，其概括起来就是代码的搬运工，将代码搬到合适的位置。下图是对搬运过程的概括，可以有个印象，后面将详细讲解。</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-boot/bootsect_boot.png" alt="启动中内存分布变化" tabindex="0" loading="lazy"><figcaption>启动中内存分布变化</figcaption></figure><p>bootsect.s主要做了如下的三件事:</p><ul><li>搬运bootsect.s代码到0x9000:0x0000处</li><li>加载setup.s代码到0x9000:0x200处</li><li>加载system模块到0x1000:0x0000处</li></ul><h2 id="过程详解" tabindex="-1"><a class="header-anchor" href="#过程详解" aria-hidden="true">#</a> 过程详解</h2><h3 id="step1-搬运bootsect-s代码到0x9000-0x0000处" tabindex="-1"><a class="header-anchor" href="#step1-搬运bootsect-s代码到0x9000-0x0000处" aria-hidden="true">#</a> step1：搬运bootsect.s代码到0x9000:0x0000处</h3><p>下面是bootsect.s中开头1-50行。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>!
 ! SYS_SIZE is the number of clicks (16 bytes) to be loaded.
 ! 0x3000 is 0x30000 bytes = 196kB, more than enough for current
 ! versions of linux
@@ -125,7 +125,7 @@ die:	jne die			! es must be at 64kB boundary
 	cmp ax,#ENDSEG		! have we loaded all yet?
 	jb ok1_read
 	ret
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>rp_read</code>的实际是逐磁道读取磁盘中system模块的过程。如下图所示共两个磁道，两个磁头，每磁道八个扇区，读取顺序如下所示，首先读取0磁头0磁道，然后读取1磁头0磁道，接着读取0磁头1磁道，最后读取1磁头1磁道。</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-boot/boot_ok_read.png" alt="rp_read" tabindex="0" loading="lazy"><figcaption>rp_read</figcaption></figure><p>rp_read首先判断是否已经读入了所有的数据(system模块)。比较<code>ax</code>和<code>ENDSEG</code>的值，如果不相等，则需要继续读取，于是跳转到<code>ok1_read</code>中执行。</p><p><code>ok1_read</code>位于161-172行：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>ok1_read:
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>rp_read</code>的实际是逐磁道读取磁盘中system模块的过程。如下图所示共两个磁道，两个磁头，每磁道八个扇区，读取顺序如下所示，首先读取0磁头0磁道，然后读取1磁头0磁道，接着读取0磁头1磁道，最后读取1磁头1磁道。</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-boot/boot_ok_read.png" alt="rp_read" tabindex="0" loading="lazy"><figcaption>rp_read</figcaption></figure><p><code>rp_read</code>首先判断是否已经读入了所有的数据(system模块)。比较<code>ax</code>和<code>ENDSEG</code>的值，如果不相等，则需要继续读取，于是跳转到<code>ok1_read</code>中执行。</p><p><code>ok1_read</code>位于161-172行：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>ok1_read:
 	seg cs
 	mov ax,sectors
 	sub ax,sread
@@ -137,12 +137,15 @@ die:	jne die			! es must be at 64kB boundary
 	xor ax,ax
 	sub ax,bx
 	shr ax,#9
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>ok1_read</code>主要计算了当前磁道上还有多少扇区没有读取完。</p><p>下面这几句计算出还有多少扇区没有读取，存到了<code>ax</code>中。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	mov ax,sectors
-	sub ax,sread
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>ok1_read</code>主要计算了当前磁道上还有多少扇区没有读取完，并将当期磁道上还剩下的扇区数存在了<code>ax</code>中， 将下一次读磁盘读到的字节数存到了<code>cx</code>中。</p><p>下面这几句便是计算的过程：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	mov ax,sectors
+	sub ax,sread          ！当前磁道还有多少扇区没有读，下面调用read_track的时候会使用到该参数
 	mov cx,ax
-	shl cx,#9
-	add cx,bx
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>Ok2_read位于173-183行。ok2_read实际的作用就是将<strong>当前磁道上的所有扇区全部读完</strong>。更具体的，就是读取开始扇区<code>cl</code>和需读扇区数<code>al</code>的数据到<code>es:bx</code>开始处。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>ok2_read:
+	shl cx,#9             ！计算这一次读会读多少字节
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>接下来进行判断，读到的数据是否超过了64KB。如果没有超过，则会跳转到<code>ok2_read</code>执行。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	add cx,bx             ！计算是否会超过64KB，64KB = 65536 = 1_00000000_00000000
+	jnc ok2_read
+	je ok2_read
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>ok2_read/ok3_read/ok4_read位于173-196行。</p><p>ok2_read实际的作用就是将<strong>当前磁道上的所有扇区全部读完</strong>。更具体的，就是读取开始扇区<code>cl</code>和需读扇区数<code>al</code>的数据到<code>es:bx</code>开始处。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>ok2_read:
+                          ! ax 先前已经设置
 	call read_track
 	mov cx,ax             ！cx = ax，本次读取的扇区数
 	add ax,sread          ！当前磁道上已经读取的扇区数
@@ -153,20 +156,21 @@ die:	jne die			! es must be at 64kB boundary
 	sub ax,head           ！判断当前磁头号
 	jne ok4_read          ！如果是0磁头，则再去读1磁头上的扇区数据。如果是1磁头
 	inc track             ！否则读取下一个磁道
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>如果当前磁道上还有扇区没有读，则会直接进入ok3_read，再次读取。否则先进入ok4_read，移动到下一个磁道或者下一个磁头进行读取。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>ok4_read:
-	mov	%ax, head        !保存当前的磁头号
-	xor	%ax, %ax         !清除已读扇区数
+ok4_read:
+	mov	%ax, head         !保存当前的磁头号
+	xor	%ax, %ax          !清除已读扇区数
 ok3_read:
-	mov	%ax, sread       !保存当前扇区已读扇区数
+	mov	%ax, sread        !保存当前扇区已读扇区数
 	shl	$9, %cx
 	add	%cx, %bx
-	jnc	rp_read
+	jnc	rp_read           ！已经读取了64KB数据，调整当前段，为读取下一段数据做准备。
 	mov	%es, %ax
 	add	$0x1000, %ax
 	mov	%ax, %es
 	xor	%bx, %bx
 	jmp	rp_read
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>接下来的read_track在ok2_read中被调用，其作用是读取当前磁道上的扇面到\`\`\`es:bx\`\`\`\`处。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>read_track:
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>ok2_read</code>的第一句话是调用了<code>read_track</code>方法：</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>call read_track
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div></div></div><p><code>read_track</code>的作用是读取当前磁道上的扇面到<code>es:bx</code>处。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>read_track:
 	push ax            !保存ax,bx,cx,dx寄存器
 	push bx            
 	push cx            
@@ -187,28 +191,44 @@ ok3_read:
 	pop bx
 	pop ax
 	ret
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>看到这里，我们再回到调用read_it的地方, 注意到其中的<code>ljmp $SETUPSEG, $0</code>，这便是跳转到了setup.s中进行执行。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	mov	$SYSSEG, %ax
-	mov	%ax, %es		# segment of 0x010000
-	call	read_it     !读取磁盘上system模块
-	call	kill_motor  !关闭驱动器马达
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>read_track</code>之后，会统计一些数据，看本磁道上的扇区是否全部读完，如果没有读完，则跳转到<code>ok3_read</code>进行再次读取。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	mov cx,ax             ！cx = ax，本次读取的扇区数
+	add ax,sread          ！当前磁道上已经读取的扇区数
+	seg cs
+	cmp ax,sectors        ！如果当前磁道上还有扇区未读，则跳转到ok3_read。
+	jne ok3_read
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>如果已经读完，则调整磁头和磁道，继续读取。这里指定了磁盘读取的顺序。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>	mov ax,#1             ！
+	sub ax,head           ！判断当前磁头号
+	jne ok4_read          ！如果是0磁头，则再去读1磁头上的扇区数据。如果是1磁头
+	inc track             ！否则读取下一个磁道
+ok4_read:
+	mov head,ax
+	xor ax,ax
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>需要分情况进行讨论：</p><ul><li>如果当前是0磁头0磁道，即<code>head=0</code>， <code>track=0</code>则<code>ax = 1</code>，<code>sub ax, head</code>之后，<code>ax = 1</code>， 由于相减不等于0，因此<code>ZF = 0</code>，<code>jne</code>会进行跳转， 于是<code>head=1</code>。</li><li>如果当前是1磁头0磁道，即<code>head=1</code>， <code>track=0</code>则<code>ax = 0</code>，<code>sub ax, head</code>之后，<code>ax = 0</code>， 由于相减等于0，因此<code>ZF = 1</code>，<code>jne</code>不会进行跳转， 于是<code>head=0</code>，<code>track=1</code>。</li><li>如果当前是0磁头1磁道，即<code>head=0</code>， <code>track=1</code>则<code>ax = 1</code>，<code>sub ax, head</code>之后，<code>ax = 1</code>， 由于相减不等于0，因此<code>ZF = 0</code>，<code>jne</code>会进行跳转， 于是<code>head=1</code>。</li></ul><p>总结起来读取顺序是首先读取0磁头0磁道，然后读取1磁头0磁道，接着读取0磁头1磁道，最后读取1磁头1磁道。</p><p>读到这里应该对整个读取的过程有了一个概念，整个过程的流程如下所示：</p><figure><img src="https://github.com/zgjsxx/static-img-repo/raw/main/blog/Linux/kernel/Linux-0.11/Linux-0.11-boot/read_disk.png" alt="read_disk" tabindex="0" loading="lazy"><figcaption>read_disk</figcaption></figure><p>看到这里，我们再回到调用<code>read_it</code>的地方, 注意到其中的<code>ljmp $SETUPSEG, $0</code>，这便是跳转到了setup.s中进行执行。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>! After that we check which root-device to use. If the device is
+! defined (!= 0), nothing is done and the given device is used.
+! Otherwise, either /dev/PS0 (2,28) or /dev/at0 (2,8), depending
+! on the number of sectors that the BIOS reports currently.
 
-	#seg cs
-	mov	%cs:root_dev+0, %ax
-	cmp	$0, %ax
+	seg cs
+	mov	ax,root_dev
+	cmp	ax,#0
 	jne	root_defined
-	#seg cs
-	mov	%cs:sectors+0, %bx
-	mov	$0x0208, %ax		# /dev/ps0 - 1.2Mb
-	cmp	$15, %bx
+	seg cs
+	mov	bx,sectors
+	mov	ax,#0x0208		! /dev/ps0 - 1.2Mb
+	cmp	bx,#15
 	je	root_defined
-	mov	$0x021c, %ax		# /dev/PS0 - 1.44Mb
-	cmp	$18, %bx
+	mov	ax,#0x021c		! /dev/PS0 - 1.44Mb
+	cmp	bx,#18
 	je	root_defined
 undef_root:
 	jmp undef_root
 root_defined:
-	#seg cs
-	mov	%ax, %cs:root_dev+0
+	seg cs
+	mov	root_dev,ax
 
-	ljmp	$SETUPSEG, $0   !跳转到SETUPSEG模块进行执行
-</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="q-a" tabindex="-1"><a class="header-anchor" href="#q-a" aria-hidden="true">#</a> Q &amp; A</h2>`,52),b={href:"https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md",target:"_blank",rel:"noopener noreferrer"},x=e("hr",null,null,-1),p=e("p",null,"文中如有表达不正确之处，欢迎大家与我交流，微信号codebuilding。",-1),h=e("figure",null,[e("img",{src:"https://github.com/zgjsxx/static-img-repo/raw/main/blog/personal/wechat.jpg",alt:"",tabindex:"0",loading:"lazy"}),e("figcaption")],-1);function g(_,f){const d=c("ExternalLinkIcon");return l(),t("div",null,[r,e("p",null,[i("关于"),v,i("中断的更多详细功能，可以参考"),e("a",m,[i("这里"),s(d)]),i("。")]),u,e("p",null,[e("a",b,[i("https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md"),s(d)])]),x,p,h])}const k=a(o,[["render",g],["__file","Linux-0.11-boot-bootsect.html.vue"]]);export{k as default};
+! after that (everyting loaded), we jump to
+! the setup-routine loaded directly after
+! the bootblock:
+
+	jmpi	0,SETUPSEG
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><h2 id="q-a" tabindex="-1"><a class="header-anchor" href="#q-a" aria-hidden="true">#</a> Q &amp; A</h2>`,64),b={href:"https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md",target:"_blank",rel:"noopener noreferrer"},x=e("hr",null,null,-1),p=e("p",null,"文中如有表达不正确之处，欢迎大家与我交流，微信号codebuilding。",-1),h=e("figure",null,[e("img",{src:"https://github.com/zgjsxx/static-img-repo/raw/main/blog/personal/wechat.jpg",alt:"",tabindex:"0",loading:"lazy"}),e("figcaption")],-1);function g(_,k){const i=t("ExternalLinkIcon");return l(),c("div",null,[r,e("p",null,[d("关于"),v,d("中断的更多详细功能，可以参考"),e("a",m,[d("这里"),s(i)]),d("。")]),u,e("p",null,[e("a",b,[d("https://github.com/Wangzhike/HIT-Linux-0.11/blob/master/1-boot/OS-booting.md"),s(i)])]),x,p,h])}const S=a(o,[["render",g],["__file","Linux-0.11-boot-bootsect.html.vue"]]);export{S as default};
