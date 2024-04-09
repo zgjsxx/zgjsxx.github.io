@@ -203,4 +203,10 @@ xchgl do_floppy,%eax
 testl %eax,%eax
 jne 1f
 movl $unexpected_floppy_interrupt,%eax
-</code></pre><p>1: call *%eax # &quot;interesting&quot; way of handling intr. pop %fs pop %es pop %ds popl %edx popl %ecx popl %eax iret</p><h3 id="parallel-interrupt" tabindex="-1"><a class="header-anchor" href="#parallel-interrupt" aria-hidden="true">#</a> parallel_interrupt</h3>`,100),c=[i];function l(d,o){return n(),e("div",null,c)}const u=s(t,[["render",l],["__file","Linux-0.11-kernel-system_call.html.vue"]]);export{u as default};
+</code></pre><p>1: call *%eax # &quot;interesting&quot; way of handling intr. pop %fs pop %es pop %ds popl %edx popl %ecx popl %eax iret</p><h3 id="parallel-interrupt" tabindex="-1"><a class="header-anchor" href="#parallel-interrupt" aria-hidden="true">#</a> parallel_interrupt</h3><p>该方法是<code>int 0x27</code>并行口中断处理程序，对硬件中断请求信号IRQ7。</p><div class="language-x86asm line-numbers-mode" data-ext="x86asm"><pre class="language-x86asm"><code>parallel_interrupt:
+	pushl %eax
+	movb $0x20,%al
+	outb %al,$0x20
+	popl %eax
+	iret
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p><code>pushl %eax</code>: 将 <code>%eax</code> 寄存器的值压入堆栈。这是为了在执行 <code>iret</code> 指令之前保存 <code>%eax</code> 寄存器的值。</p><p><code>movb $0x20,%al</code>: 将立即数 0x20 移动到 %al 寄存器中。这个操作是为了向主中断控制器发送 End-of-Interrupt（EOI）信号，告知它当前处理的中断已经完成。</p><p><code>outb %al,$0x20</code>: 将 %al 寄存器的值（即 0x20）写入 I/O 端口 <code>0x20</code>，以向主中断控制器发送 EOI 信号，表示中断处理已经完成。</p><p><code>popl %eax</code>: 从堆栈中弹出之前保存的 %eax 寄存器的值，恢复到中断处理程序执行之前的状态。</p><p><code>iret</code>: 执行中断返回指令，从堆栈中弹出标志寄存器、代码段寄存器和指令指针的值，恢复到中断发生时的执行现场，并继续执行中断点之后的指令。</p><p>可以看出在Linux-0.11版本内核还未实现，这里只是发送EOI指令。</p>`,108),c=[i];function l(d,o){return n(),e("div",null,c)}const u=s(t,[["render",l],["__file","Linux-0.11-kernel-system_call.html.vue"]]);export{u as default};
