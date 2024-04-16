@@ -1,0 +1,1 @@
+import{_ as e,V as n,W as r}from"./framework-9a29aaa0.js";const t={};function _(c,o){return n(),r("div")}const s=e(t,[["render",_],["__file","Linux-0.11-kernel-floppy.html.vue"]]);export{s as default};
