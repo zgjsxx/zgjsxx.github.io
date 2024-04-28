@@ -1,1 +1,0 @@
-import{_ as n,V as o,W as t,X as e}from"./framework-9a29aaa0.js";const l={},s=e("ul",null,[e("li")],-1),_=[s];function c(r,a){return o(),t("div",null,_)}const u=n(l,[["render",c],["__file","Linux-0.11-kernel-console.html.vue"]]);export{u as default};
