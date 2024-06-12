@@ -1,0 +1,1 @@
+import{_ as t,V as s,W as r,X as e,Y as a}from"./framework-9a29aaa0.js";const c={},o=e("h1",{id:"计算机基本架构-内存",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#计算机基本架构-内存","aria-hidden":"true"},"#"),a(" 计算机基本架构-内存")],-1),n=[o];function _(d,i){return s(),r("div",null,n)}const h=t(c,[["render",_],["__file","5-memory-circuits-and-system.html.vue"]]);export{h as default};
