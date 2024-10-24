@@ -1,0 +1,15 @@
+import{_ as e,V as a,W as n,a0 as i}from"./framework-9a29aaa0.js";const r={},l=i(`<ul><li><a href="#cs-6824%E7%AC%AC10%E8%AE%B2-amazon-aurora">cs-6.824第10讲 Amazon Aurora</a><ul><li><a href="#aurora%E7%9A%84%E6%BC%94%E8%BF%9B%E8%BF%87%E7%A8%8B">Aurora的演进过程。</a></li><li><a href="#%E5%85%B8%E5%9E%8B%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E8%AE%BE%E8%AE%A1">典型数据库的设计</a></li></ul></li></ul><h1 id="cs-6-824第10讲-amazon-aurora" tabindex="-1"><a class="header-anchor" href="#cs-6-824第10讲-amazon-aurora" aria-hidden="true">#</a> cs-6.824第10讲 Amazon Aurora</h1><p>今天要讲的论文来自Amazon的Aurora，探讨如何构建高性能、可靠的数据库，将其作为Amazon的云基础设施的一部分，也是建立在Amazon所提供的基础架构之上。</p><p>讲解Aurora的原因是它是Amazon非常成功的一项云服务。许多客户都在使用它。论文中提到其在交易吞吐量上实现了35倍的速度。</p><p>本文探讨了利用通用存储实现性能和容错性的极限，因为这样极限会产生瓶颈，因此Aurora放弃了通用存储。一开始使用的是Amazon自身通用的存储基础设施，但是发现不满足需求，进而构建了完全针对特定应用的存储系统。</p><h2 id="aurora的演进过程。" tabindex="-1"><a class="header-anchor" href="#aurora的演进过程。" aria-hidden="true">#</a> Aurora的演进过程。</h2><p>起初，Amazon推出的云服务旨在支持那些利用Amazon硬件及其机房搭建网站的用户，命名为EC2。亚马逊拥有庞大的服务器机房，在服务器中安装虚拟机监控程序，然后将虚拟机出租给客户。客户在租用虚拟机之后，就可以在上面部署网络服务器、数据库以及应用程序。</p><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>web    DB
+ec2    ec2
+   
+    VMM
+
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>每一台虚拟机都会分配一个物理磁盘，租给客户的虚拟机会分得该磁盘的一部分。</p><p>EC2特别适合于网络服务器。</p><p>使用EC2的另一大应用是数据库，因为一个网络由一组无状态的web服务器组成，每当它们需要访问持久性数据时，就会与后端数据库进行通信。</p><div class="language-text line-numbers-mode" data-ext="text"><pre class="language-text"><code>           web      DB
+c1         ec2      ec2
+
+
+c2         ec2      ec2
+
+
+c2         ec2      ec2
+
+</code></pre><div class="line-numbers" aria-hidden="true"><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div><div class="line-number"></div></div></div><p>如果实际运行web服务器的硬件崩溃了，完全不用担心，因为它本身不保持任何状态，你只需要在新的EC2上重新启动一个新的web服务器。如果数据库实例的EC2发生崩溃而不可用，且数据存在本地磁盘上，那么这是一个严重的问题。</p><p>Amazon提供了一种大规模的数据存储方案，即S3。你可以定期对数据库的状态取快照，将其存储在S3中，以此为备份和灾难恢复只用。但这种周期性快照的方式意味着，你将丢失发生在定期备份之间的更新内容。</p><p>EBS- Elastic Block Store</p><p>使用EBS之后，运行在EC2实例上的数据库拥有了一个存储系统，该系统实际上能够在其依赖的硬件发生崩溃或损坏时幸存。 如果这台物理服务器宕机，您只需要启动另一个EC2实例，启动数据库，将之前的EBS挂载在就可以。</p><p>EBS不是一个共享系统，一个EBS只能被一台EC2挂载。EBS卷是在亚马逊庞大的存储服务器集群上实现的，这些服务器配备了数百块硬盘。</p><p>尽管EBS是一个进步，但它仍存在一些问题:</p><ul><li>如果你在EBS上运行数据库，最终会导致大量数据通过网络传输。它很大程度上受到了网络限制。</li><li>EBS的容错性并不够强，出于性能考虑，amazon总是将EBS卷的两个副本放在同一个数据中心内，如果单个服务器崩溃，比如你使用的两个EBS服务器中的一个发生故障，不必担心，可以切换到另一个上。但如果整个数据中心瘫痪，就没有任何应对方案。</li></ul><h2 id="典型数据库的设计" tabindex="-1"><a class="header-anchor" href="#典型数据库的设计" aria-hidden="true">#</a> 典型数据库的设计</h2><p>事务 崩溃可恢复</p><p>14：01</p>`,22),s=[l];function d(c,o){return a(),n("div",null,s)}const t=e(r,[["render",d],["__file","lesson10.html.vue"]]);export{t as default};
