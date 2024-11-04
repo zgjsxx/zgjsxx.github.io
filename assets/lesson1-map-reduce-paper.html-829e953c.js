@@ -1,1 +1,0 @@
-import{_ as e,V as c,W as r}from"./framework-9a29aaa0.js";const s={};function t(a,n){return c(),r("div")}const _=e(s,[["render",t],["__file","lesson1-map-reduce-paper.html.vue"]]);export{_ as default};
