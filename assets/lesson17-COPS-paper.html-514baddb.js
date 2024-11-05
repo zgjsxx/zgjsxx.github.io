@@ -1,0 +1,1 @@
+import{_ as e,V as r,W as s}from"./framework-9a29aaa0.js";const t={};function c(n,o){return r(),s("div")}const a=e(t,[["render",c],["__file","lesson17-COPS-paper.html.vue"]]);export{a as default};
