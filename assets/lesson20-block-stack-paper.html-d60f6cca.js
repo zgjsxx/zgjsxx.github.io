@@ -1,1 +1,0 @@
-import{_ as e,V as c,W as t}from"./framework-9a29aaa0.js";const o={};function s(r,a){return c(),t("div")}const _=e(o,[["render",s],["__file","lesson20-block-stack-paper.html.vue"]]);export{_ as default};
