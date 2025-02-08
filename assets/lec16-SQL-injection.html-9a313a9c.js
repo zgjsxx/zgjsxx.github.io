@@ -1,0 +1,1 @@
+import{_ as t,V as n,W as c,X as e,Y as o}from"./framework-9a29aaa0.js";const a={},i=e("h1",{id:"sql-injection",tabindex:"-1"},[e("a",{class:"header-anchor",href:"#sql-injection","aria-hidden":"true"},"#"),o(" SQL injection")],-1),s=[i];function r(_,l){return n(),c("div",null,s)}const h=t(a,[["render",r],["__file","lec16-SQL-injection.html.vue"]]);export{h as default};
