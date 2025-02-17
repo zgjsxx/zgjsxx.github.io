@@ -1,0 +1,1 @@
+import{_ as t,V as c,W as o,X as e,Y as s}from"./framework-9a29aaa0.js";const _={},a=e("p",null,[e("a",{href:"mailto:git@github.com"},"git@github.com"),s(":zgjsxx/cs_short_article.git")],-1),i=[a];function r(n,l){return c(),o("div",null,i)}const m=t(_,[["render",r],["__file","iec-61850.html.vue"]]);export{m as default};
